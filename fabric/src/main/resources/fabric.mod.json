@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "imaginebook",
+  "version": "${version}",
+  "name": "ImagineBook",
+  "description": "",
+  "authors": [
+    ""
+  ],
+  "contact": {
+    "homepage": ""
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/imaginebook/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "io.github.jumperonjava.imaginebook.fabric.ImaginebookFabric"
+    ],
+    "client": [
+      "io.github.jumperonjava.imaginebook.fabric.client.ImaginebookFabricClient"
+    ]
+  },
+  "mixins": [
+    "imaginebook.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.15.3",
+    "minecraft": "~1.21",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
