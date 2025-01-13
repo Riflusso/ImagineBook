@@ -8,6 +8,7 @@ import io.github.jumperonjava.imaginebook.util.VersionFunctions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
+import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
@@ -102,10 +103,10 @@ public abstract class BookEditScreenMixin extends Screen {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     //? if >= 1.21.3 {
-    void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
-    //?} else {
-    /*void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
-    *///?}
+    /*void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
+    *///?} else {
+    void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
+    //?}
         for (int i = 0; i < 250; i++) {
             imaginebook_pages.add(new ArrayList<>());
             imaginebook_safe_pages.add(new ArrayList<>());
@@ -131,6 +132,11 @@ public abstract class BookEditScreenMixin extends Screen {
         }
     }
 
+    @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/BookEditScreen;setFocused(Lnet/minecraft/client/gui/Element;)V"))
+    void ignoreSetFocused(BookEditScreen instance, Element element, Operation<Void> original) {
+
+    }
+
     ImageData currentEdited;
 
     @Inject(method = "updateButtons", at = @At("HEAD"), cancellable = true)
@@ -154,6 +160,10 @@ public abstract class BookEditScreenMixin extends Screen {
         imaginebook_safe_pages.set(currentPage, ImageSerializer.parseSafeModeImages(pages.get(currentPage)));
     }
 
+    @Override
+    protected void switchFocus(GuiNavigationPath path) {
+        this.blur();
+    }
 
     @Inject(method = "init", at = @At("HEAD"))
     void init(CallbackInfo ci) {
