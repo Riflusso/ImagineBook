@@ -2,15 +2,7 @@ package io.github.jumperonjava.imaginebook;
 
 import com.mojang.blaze3d.systems.RenderSystem;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.texture.NativeImage;
-import net.minecraft.util.math.Direction;
-import org.joml.Matrix4f;
 import org.joml.Quaternionf;
-
-import java.time.Instant;
-import java.time.LocalDate;
-import java.time.Month;
-import java.util.Date;
 
 public final class Imaginebook {
     public static final String MOD_ID = "imaginebook";
@@ -29,7 +21,7 @@ public final class Imaginebook {
         return link;
     }
 
-    public static void renderImage(DrawContext context, int bookX, int bookY, ImageData imageData, ImageRequest image, Image.ImageSize nativeImage) {
+    public static void renderImage(DrawContext context, int bookX, int bookY, ImageData imageData, ImageRequest image, Image.ImageSize nativeImage, float opacity) {
         var w = imageData.width(nativeImage);
         var h = imageData.height(nativeImage);
         context.getMatrices().push();
@@ -49,6 +41,7 @@ public final class Imaginebook {
 //                -(bookX + imageData.x()),
 //                -(bookY + imageData.y()),
 //                0);
+        context.setShaderColor(1,1,1,opacity);
         context.drawTexture(image.getTexture().getLeft(),
                 0,
                 0,

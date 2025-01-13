@@ -8,8 +8,8 @@ public final class ImageData {
     public String url;
     public float x;
     public float y;
-    public float width;
-    public float height;
+    public float width=1;
+    public float height=1;
     public float rotation;
 
     public ImageData(String url, short x, short y, float width, float height) {

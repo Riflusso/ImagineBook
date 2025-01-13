@@ -47,29 +47,34 @@ public class BookScreenMixin extends Screen {
 
 
     void parseImages(BookScreen.Contents contents){
+
         for(int i=0;i<255;i++){
             imaginebook_pages.add(new ArrayList<>());
         }
         var pages = contents.pages();
         for (int i = 0; i < pages.size(); i++) {
             var page = pages.get(i).getString();
-            if(page.length()!= Imaginebook.LENGTH)
-                continue;
-            var split = page.split("\n");
-            var last = split[split.length - 1];
+
+            if (page.length() == Imaginebook.LENGTH) {
+                var split = page.split("\n");
+                var last = split[split.length - 1];
 //            page = page.replace(last,"").trim();
 //            contents.pages().set(i,page);
-            try {
-                var asbytes = Base64.getDecoder().decode(last);
-                var definitions = ImageSerializer.deserializeImageMetadata(asbytes);
-                imaginebook_pages.set(i, definitions);
+                try {
+                    var asbytes = Base64.getDecoder().decode(last);
+                    var definitions = ImageSerializer.deserializeImageMetadata(asbytes);
+                    imaginebook_pages.set(i, definitions);
+                } catch (Exception e) {
+                    this.error = Text.literal(e.getMessage());
+                    e.printStackTrace();
+                }
+
             }
-            catch (Exception e) {
-                this.error = Text.literal(e.getMessage());
-                e.printStackTrace();
-            }
+            //safe mode
+            imaginebook_pages.get(i).addAll(ImageSerializer.parseSafeModeImages(page));
         }
     }
+
     @Inject(method = "render",at = @At("TAIL"))
     void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         int bookX = this.width / 2 - 96;
@@ -82,7 +87,7 @@ public class BookScreenMixin extends Screen {
             Image.ImageSize nativeImage = req.getTexture().getRight();
             RenderSystem.disableCull();
             RenderSystem.enableBlend();
-            Imaginebook.renderImage(context, bookX, bookY, image, req, nativeImage);
+            Imaginebook.renderImage(context, bookX, bookY, image, req, nativeImage, 1);
         }
         previousPageButton.render(context, mouseX, mouseY, delta);
         nextPageButton.render(context, mouseX, mouseY, delta);
