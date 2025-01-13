@@ -1,6 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
-    <bytecodeTargetLevel target="21" />
+    <bytecodeTargetLevel target="17">
+      <module name="CustomCursor.1.21.1" target="21" />
+      <module name="CustomCursor.1.21.1-fabric" target="21" />
+      <module name="CustomCursor.1.21.1-fabric.main" target="21" />
+      <module name="CustomCursor.1.21.1-fabric.test" target="21" />
+      <module name="CustomCursor.1.21.1-neoforge" target="21" />
+      <module name="CustomCursor.1.21.1-neoforge.main" target="21" />
+      <module name="CustomCursor.1.21.1-neoforge.test" target="21" />
+      <module name="CustomCursor.1.21.1.main" target="21" />
+      <module name="CustomCursor.1.21.1.test" target="21" />
+      <module name="CustomCursor.1.21.3" target="21" />
+      <module name="CustomCursor.1.21.3-fabric" target="21" />
+      <module name="CustomCursor.1.21.3-fabric.main" target="21" />
+      <module name="CustomCursor.1.21.3-fabric.test" target="21" />
+      <module name="CustomCursor.1.21.3-neoforge" target="21" />
+      <module name="CustomCursor.1.21.3-neoforge.main" target="21" />
+      <module name="CustomCursor.1.21.3-neoforge.test" target="21" />
+      <module name="CustomCursor.1.21.3.main" target="21" />
+      <module name="CustomCursor.1.21.3.test" target="21" />
+      <module name="CustomCursor.1.21.4" target="21" />
+      <module name="CustomCursor.1.21.4-fabric" target="21" />
+      <module name="CustomCursor.1.21.4-fabric.main" target="21" />
+      <module name="CustomCursor.1.21.4-fabric.test" target="21" />
+      <module name="CustomCursor.1.21.4-neoforge" target="21" />
+      <module name="CustomCursor.1.21.4-neoforge.main" target="21" />
+      <module name="CustomCursor.1.21.4-neoforge.test" target="21" />
+      <module name="CustomCursor.1.21.4.main" target="21" />
+      <module name="CustomCursor.1.21.4.test" target="21" />
+      <module name="CustomCursor.buildSrc" target="21" />
+      <module name="CustomCursor.buildSrc.main" target="21" />
+      <module name="CustomCursor.buildSrc.test" target="21" />
+      <module name="CustomCursor.fabric.1.21.1" target="21" />
+      <module name="CustomCursor.fabric.1.21.1.main" target="21" />
+      <module name="CustomCursor.fabric.1.21.1.test" target="21" />
+      <module name="CustomCursor.fabric.1.21.3" target="21" />
+      <module name="CustomCursor.fabric.1.21.3.main" target="21" />
+      <module name="CustomCursor.fabric.1.21.3.test" target="21" />
+      <module name="CustomCursor.fabric.1.21.4" target="21" />
+      <module name="CustomCursor.fabric.1.21.4.main" target="21" />
+      <module name="CustomCursor.fabric.1.21.4.test" target="21" />
+      <module name="CustomCursor.neoforge.1.21.1" target="21" />
+      <module name="CustomCursor.neoforge.1.21.1.main" target="21" />
+      <module name="CustomCursor.neoforge.1.21.1.test" target="21" />
+      <module name="CustomCursor.neoforge.1.21.3" target="21" />
+      <module name="CustomCursor.neoforge.1.21.3.main" target="21" />
+      <module name="CustomCursor.neoforge.1.21.3.test" target="21" />
+      <module name="CustomCursor.neoforge.1.21.4" target="21" />
+      <module name="CustomCursor.neoforge.1.21.4.main" target="21" />
+      <module name="CustomCursor.neoforge.1.21.4.test" target="21" />
+    </bytecodeTargetLevel>
   </component>
 </project>

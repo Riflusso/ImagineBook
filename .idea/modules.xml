@@ -2,16 +2,15 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.1-fabric/ImagineBook.1.21.1-fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.1-fabric/ImagineBook.1.21.1-fabric.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.1-fabric/ImagineBook.1.21.1-fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.1-fabric/ImagineBook.1.21.1-fabric.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.3-fabric/ImagineBook.1.21.3-fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.3-fabric/ImagineBook.1.21.3-fabric.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.3-fabric/ImagineBook.1.21.3-fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.3-fabric/ImagineBook.1.21.3-fabric.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.4-fabric/ImagineBook.1.21.4-fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.4-fabric/ImagineBook.1.21.4-fabric.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.4-fabric/ImagineBook.1.21.4-fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.4-fabric/ImagineBook.1.21.4-fabric.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/imaginebook.common.iml" filepath="$PROJECT_DIR$/.idea/modules/common/imaginebook.common.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/imaginebook.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/imaginebook.common.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/imaginebook.common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common/imaginebook.common.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/imaginebook.fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/imaginebook.fabric.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/imaginebook.fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/imaginebook.fabric.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/io.github.jumperonjava.imaginebook.common.iml" filepath="$PROJECT_DIR$/.idea/modules/common/io.github.jumperonjava.imaginebook.common.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/io.github.jumperonjava.imaginebook.common.main.iml" filepath="$PROJECT_DIR$/.idea/modules/common/io.github.jumperonjava.imaginebook.common.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/common/io.github.jumperonjava.imaginebook.common.test.iml" filepath="$PROJECT_DIR$/.idea/modules/common/io.github.jumperonjava.imaginebook.common.test.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/io.github.jumperonjava.imaginebook.fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/io.github.jumperonjava.imaginebook.fabric.main.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/fabric/io.github.jumperonjava.imaginebook.fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/fabric/io.github.jumperonjava.imaginebook.fabric.test.iml" />
     </modules>
   </component>
 </project>
