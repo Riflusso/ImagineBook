@@ -101,8 +101,8 @@ public class ImageSerializer {
                     data.y = Float.parseFloat(numbers[1]);
                 }
                 if (numbers.length == 3) {
-                    data.width = Float.parseFloat(numbers[2]);
-                    data.height = Float.parseFloat(numbers[2]);
+                    data.width = Float.parseFloat(numbers[2])/ 100;
+                    data.height = Float.parseFloat(numbers[2])/ 100;
                 }
                 if (numbers.length == 4) {
                     data.width = Float.parseFloat(numbers[2]) / 100;

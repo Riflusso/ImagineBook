@@ -1,7 +1,7 @@
 modLoader = "javafml"
 loaderVersion = "*"
 license = "LGPLv3"
-issueTrackerURL="https://JavaJumper/ImagineBook/issues"
+issueTrackerURL="https://github.com/jumperonjava/ImagineBook/issues"
 
 [[mods]]
 modId = "imaginebook"

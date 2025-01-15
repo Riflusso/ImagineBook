@@ -44,3 +44,4 @@ replay_*.log
 local.properties
 
 .architectury-transformer\debug.log
+.architectury-transformer/debug.log

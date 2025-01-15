@@ -533,7 +533,7 @@ public abstract class BookEditScreenMixin extends Screen {
         this.drawSelection(context, pageContent.selectionRectangles);
         this.drawCursor(context, pageContent.position, pageContent.atEnd);
         if (!signing) {
-            context.drawTextWithShadow(client.textRenderer, lengthLeft, width - 4 - client.textRenderer.getWidth(lengthLeft), 4, 0x3F000000);
+            context.drawTextWithShadow(client.textRenderer, lengthLeft, width - 4 - client.textRenderer.getWidth(lengthLeft), 4, 0xFFFFFFFF);
         }
     }
 
