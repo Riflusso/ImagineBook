@@ -1,3 +1,4 @@
+import me.modmuss50.mpp.ReleaseType
 import java.util.*
 
 plugins {
@@ -96,7 +97,7 @@ publishMods {
         "${mod.name} ${loader.replaceFirstChar { it.uppercase() }} ${property("mod.mc_title")}-${mod.version}"
     version = mod.version
     changelog = rootProject.file("CHANGELOG.md").readText()
-    type = BETA
+    type = ReleaseType.BETA
 
     modLoaders.add(loader)
 
