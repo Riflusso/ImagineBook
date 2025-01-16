@@ -4,6 +4,8 @@
   "imaginebook.gui.remove": "Удалить изображение",
   "imaginebook.error.too_long_encoded": "Ошибка: данные слишком длинные на страницах %s",
   "imaginebook.gui.used": "Места осталось на странице: %d",
-  "imaginebook.gui.urlhere": "Вставьте ссылку сюда"
+  "imaginebook.gui.urlhere": "Вставьте ссылку сюда",
+  "imaginebook.gui.extended.false": "Обычный режим",
+  "imaginebook.gui.extended.true": "Расширеный режим"
 
 }

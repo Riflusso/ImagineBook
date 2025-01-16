@@ -178,10 +178,22 @@ tasks.build {
     description = "Must run through 'chiseledBuild'"
 }
 
-tasks.register<Copy>("buildAndCollect") {
+val buildAndCollect = tasks.register<Copy>("buildAndCollect") {
     group = "versioned"
     description = "Must run through 'chiseledBuild'"
     from(tasks.remapJar.get().archiveFile, tasks.remapSourcesJar.get().archiveFile)
     into(rootProject.layout.buildDirectory.file("libs/${mod.version}/$loader"))
     dependsOn("build")
+}
+
+if (stonecutter.current.isActive) {
+    rootProject.tasks.register("buildActive") {
+        group = "project"
+        dependsOn(buildAndCollect)
+    }
+
+    rootProject.tasks.register("runActive") {
+        group = "project"
+        dependsOn(tasks.named("runClient"))
+    }
 }

@@ -4,6 +4,8 @@
   "imaginebook.gui.remove": "Видалити зображення",
   "imaginebook.error.too_long_encoded": "Помилка: дані занадто довгі на сторінках %s",
   "imaginebook.gui.used": "Місця залишилось на сторінці: %d",
-  "imaginebook.gui.urlhere": "Вставте посилання сюди"
+  "imaginebook.gui.urlhere": "Вставте посилання сюди",
+  "imaginebook.gui.extended.false": "Звичайний режим",
+  "imaginebook.gui.extended.true": "Розширений режим"
 
 }

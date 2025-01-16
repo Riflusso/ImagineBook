@@ -23,6 +23,7 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
+import net.minecraft.util.math.ColorHelper;
 import org.apache.logging.log4j.util.Strings;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -103,10 +104,10 @@ public abstract class BookEditScreenMixin extends Screen {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     //? if >= 1.21.3 {
-    /*void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
-    *///?} else {
-    void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
-    //?}
+    void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
+    //?} else {
+    /*void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
+    *///?}
         for (int i = 0; i < 250; i++) {
             imaginebook_pages.add(new ArrayList<>());
             imaginebook_safe_pages.add(new ArrayList<>());
@@ -176,7 +177,7 @@ public abstract class BookEditScreenMixin extends Screen {
             heightOffset = 140;
         }
 
-        urlField = addDrawableChild(new TextFieldWidget(client.textRenderer, 0 + gap, heightOffset +(elementHeight + gap) + gap, fieldWidth, elementHeight, Text.translatable("imaginebook.gui.urlhere")));
+        urlField = addDrawableChild(new TextFieldWidget(client.textRenderer, gap, heightOffset +(elementHeight + gap) + gap, fieldWidth, elementHeight, Text.translatable("imaginebook.gui.urlhere")));
         urlField.setMaxLength(256);//+1 to be able to notify user it is too long
         urlField.setChangedListener((url) -> {
             try {
@@ -194,21 +195,21 @@ public abstract class BookEditScreenMixin extends Screen {
             var newImage = new ImageData("", (short) 0, (short) 0, 1, 1);
             imaginebook_pages.get(currentPage).add(newImage);
             setCurrentEdited(newImage);
-        }).position(0 + gap, heightOffset + 0 + gap).size(fieldWidth / 2 - gap, elementHeight).build());
+        }).position(gap, heightOffset + gap).size(fieldWidth / 2 - gap, elementHeight).build());
         removeButton = addDrawableChild(ButtonWidget.builder(Text.translatable("imaginebook.gui.remove"), (b) -> {
             currentEdited.height = 0;
             currentEdited.width = 0;
             setCurrentEdited(null);
-        }).position(fieldWidth / 2 + gap + gap, heightOffset + 0 + gap).size(fieldWidth / 2 - gap, elementHeight).build());
+        }).position(fieldWidth / 2 + gap + gap, heightOffset + gap).size(fieldWidth / 2 - gap, elementHeight).build());
 
         // x position elements
         xPosButton = addDrawableChild(ButtonWidget.builder(Text.literal("⇄"), (b) -> {
-        }).position(0 + gap, heightOffset + 2 * (elementHeight + gap) + gap).size(20, elementHeight).build());
+        }).position(gap, heightOffset + 2 * (elementHeight + gap) + gap).size(20, elementHeight).build());
         xPosField = addDrawableChild(new TextFieldWidget(client.textRenderer, 24 + gap, heightOffset + 2 * (elementHeight + gap) + gap, fieldWidth / 2 - 24 - gap / 2, elementHeight, Text.empty()));
         xPosField.setChangedListener(createSetter(x -> currentEdited.x = x, xPosField));
 
         yPosButton = addDrawableChild(ButtonWidget.builder(Text.literal("⇅"), (b) -> {
-        }).position(0 + gap, heightOffset + 3 * (elementHeight + gap) + gap).size(20, elementHeight).build());
+        }).position(gap, heightOffset + 3 * (elementHeight + gap) + gap).size(20, elementHeight).build());
         yPosField = addDrawableChild(new TextFieldWidget(client.textRenderer, 24 + gap, heightOffset + 3 * (elementHeight + gap) + gap, fieldWidth / 2 - 24 - gap / 2, elementHeight, Text.empty()));
         yPosField.setChangedListener(createSetter(y -> currentEdited.y = y, yPosField));
 
@@ -223,7 +224,7 @@ public abstract class BookEditScreenMixin extends Screen {
         heightField.setChangedListener(createSetter(h -> currentEdited.height = (h / new ImageRequest(currentEdited.url).getTexture().getRight().getHeight()), heightField));
 
         spinButton = addDrawableChild(ButtonWidget.builder(Text.literal("↻"), (b) -> {
-        }).position(0 + gap, heightOffset + 4 * (elementHeight + gap) + gap).size(20, elementHeight).build());
+        }).position(gap, heightOffset + 4 * (elementHeight + gap) + gap).size(20, elementHeight).build());
         spinField = addDrawableChild(new TextFieldWidget(client.textRenderer, 24 + gap, heightOffset + 4 * (elementHeight + gap) + gap, fieldWidth - gap - 24, elementHeight, Text.empty()));
         spinField.setChangedListener(createSetter(h -> {
             currentEdited.rotation = 0;
