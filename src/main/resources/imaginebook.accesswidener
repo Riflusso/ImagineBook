@@ -9,3 +9,5 @@ accessible field net/minecraft/client/gui/screen/ingame/BookEditScreen$PageConte
 accessible field net/minecraft/client/gui/screen/ingame/BookEditScreen$PageContent position Lnet/minecraft/client/gui/screen/ingame/BookEditScreen$Position;
 accessible field net/minecraft/client/gui/screen/ingame/BookEditScreen$PageContent atEnd Z
 accessible class net/minecraft/client/gui/screen/ingame/BookEditScreen$Position
+accessible field net/minecraft/client/gui/widget/TextFieldWidget text Ljava/lang/String;
+accessible field net/minecraft/client/gui/widget/TextFieldWidget selectionStart I

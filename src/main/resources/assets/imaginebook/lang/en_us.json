@@ -1,5 +1,6 @@
 {
-  "imaginebook.error.too_long": "Url is longer that 255 symbols",
+  "imaginebook.error.url_too_long": "Url is longer that 255 symbols",
+  "imaginebook.error.too_much_lines": "Text exceeds limit",
   "imaginebook.gui.add": "Add image",
   "imaginebook.gui.remove": "Remove image",
   "imaginebook.error.too_long_encoded": "Error: encoded images data is too long on these pages: %s",

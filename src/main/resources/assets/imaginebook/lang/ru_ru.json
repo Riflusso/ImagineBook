@@ -1,5 +1,6 @@
 {
-  "imaginebook.error.too_long": "Ссылка длиннее 255 символов",
+  "imaginebook.error.url_too_long": "Ссылка длиннее 255 символов",
+  "imaginebook.error.too_much_lines": "Текст превышает лимит",
   "imaginebook.gui.add": "Добавить изображение",
   "imaginebook.gui.remove": "Удалить изображение",
   "imaginebook.error.too_long_encoded": "Ошибка: данные слишком длинные на страницах %s",

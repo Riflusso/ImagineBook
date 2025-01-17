@@ -4,6 +4,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.jumperonjava.imaginebook.*;
+import io.github.jumperonjava.imaginebook.util.DeletedImageData;
 import io.github.jumperonjava.imaginebook.util.VersionFunctions;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.DrawContext;
@@ -16,6 +17,7 @@ import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
+import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.Rect2i;
 import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.player.PlayerEntity;
@@ -23,7 +25,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
-import org.apache.logging.log4j.util.Strings;
+import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -39,9 +42,12 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Mixin(BookEditScreen.class)
-public abstract class BookEditScreenMixin extends Screen {
+public abstract class NewBookEditScreenMixin extends Screen {
 
 
     @Shadow
@@ -71,6 +77,10 @@ public abstract class BookEditScreenMixin extends Screen {
 
     @Shadow protected abstract void drawCursor(DrawContext context, BookEditScreen.Position position, boolean atEnd);
 
+    @Shadow protected abstract void invalidatePageContent();
+
+    @Shadow @Final private SelectionManager currentPageSelectionManager;
+    @Shadow @Nullable private BookEditScreen.PageContent pageContent;
     private TextFieldWidget urlField;
     private TextFieldWidget xPosField;
     private TextFieldWidget widthField;
@@ -88,17 +98,15 @@ public abstract class BookEditScreenMixin extends Screen {
     private ButtonWidget addButton;
     private Text error;
 
-    protected BookEditScreenMixin(Text title) {
+    protected NewBookEditScreenMixin(Text title) {
         super(title);
     }
 
     @Inject(method = "changePage", at = @At("HEAD"))
     void onChangePage(CallbackInfo ci) {
-        currentEdited = null;
+        currentEdited = -1;
     }
-
-    List<List<ImageData>> imaginebook_pages = new ArrayList<>();
-    List<List<ImageData>> imaginebook_safe_pages = new ArrayList<>();
+    List<List<ImageData>> display_pages = new ArrayList<>();
 
 
     @Inject(method = "<init>", at = @At("TAIL"))
@@ -108,36 +116,57 @@ public abstract class BookEditScreenMixin extends Screen {
     /*void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
     *///?}
         for (int i = 0; i < 250; i++) {
-            imaginebook_pages.add(new ArrayList<>());
-            imaginebook_safe_pages.add(new ArrayList<>());
+            display_pages.add(new ArrayList<>());
+            //imaginebook_safe_pages.add(new ArrayList<>());
         }
+        updateDisplayImages();
+    }
+    void updateDisplayImages() {
+
         for (int i = 0; i < pages.size(); i++) {
             var page = pages.get(i);
-            if (page.length() == Imaginebook.LENGTH) {
-                var split = page.split("\n");
-                var last = split[split.length - 1];
-                page = page.replace(last, "").trim();
-                pages.set(i, page);
-                try {
-                    var asbytes = Base64.getDecoder().decode(last);
-                    var definitions = ImageSerializer.deserializeImageMetadata(asbytes);
-                    imaginebook_pages.set(i, definitions);
-                } catch (Exception e) {
-                    this.error = Text.literal(e.getMessage() == null ? "Unknown error" : e.getMessage());
-                    e.printStackTrace();
-                }
-            }
+//            if (page.length() == Imaginebook.LENGTH) {
+//                var split = page.split("\n");
+//                var last = split[split.length - 1];
+//                page = page.replace(last, "").trim();
+//                pages.set(i, page);
+//                try {
+//                    var asbytes = Base64.getDecoder().decode(last);
+//                    var definitions = ImageSerializer.deserializeImageMetadata(asbytes);
+//                    display_pages.set(i, definitions);
+//                } catch (Exception e) {
+//                    this.error = Text.literal(e.getMessage() == null ? "Unknown error" : e.getMessage());
+//                    e.printStackTrace();
+//                }
+//            }
+            display_pages.set(i, ImageSerializer.parseSafeModeImages(page));
 
-            imaginebook_safe_pages.set(currentPage, ImageSerializer.parseSafeModeImages(page));
         }
     }
 
+    private String getCurrentPageContent(){
+        if(currentPage >= pages.size()){
+            return "";
+        }
+        return pages.get(currentPage);
+    }
+    private void setCurrentPageContent(String content){
+        pages.set(currentPage,content);
+        this.dirty = true;
+        var start = currentPageSelectionManager.getSelectionStart();
+        var end = currentPageSelectionManager.getSelectionEnd();
+        start = MathHelper.clamp(start, 0, pages.size() - 1);
+        end = MathHelper.clamp(end, 0, pages.size() - 1);
+        currentPageSelectionManager.setSelection(start, end);
+
+        invalidatePageContent();
+    }
     @WrapOperation(method = "render", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/screen/ingame/BookEditScreen;setFocused(Lnet/minecraft/client/gui/Element;)V"))
     void ignoreSetFocused(BookEditScreen instance, Element element, Operation<Void> original) {
 
     }
 
-    ImageData currentEdited;
+    int currentEdited = -1;
 
     @Inject(method = "updateButtons", at = @At("HEAD"), cancellable = true)
     void updateButtons(CallbackInfo ci) {
@@ -146,9 +175,9 @@ public abstract class BookEditScreenMixin extends Screen {
         }
     }
 
-    private void setCurrentEdited(ImageData image) {
-        currentEdited = image;
-        if (currentEdited == null) {
+    private void setCurrentEdited(int imageId) {
+        currentEdited = imageId;
+        if (currentEdited == -1) {
             setFocused(null);
         } else {
             updateFields();
@@ -157,7 +186,22 @@ public abstract class BookEditScreenMixin extends Screen {
 
     @Inject(method = "invalidatePageContent", at = @At("HEAD"))
     void updateSafeModeImages(CallbackInfo ci) {
-        imaginebook_safe_pages.set(currentPage, ImageSerializer.parseSafeModeImages(pages.get(currentPage)));
+        updateDisplayImages();
+    }
+
+    //current page get
+    ImageData getCurrentPageImage(int id){
+        if(id == -1)
+            return null;
+        return display_pages.get(currentPage).get(id);
+    }
+    //Get current page image by id
+    void addCurrentPageImage(ImageData image) {
+        setCurrentPageContent(getCurrentPageContent()+image.bookString());
+        updateDisplayImages();
+    }
+    void setCurrentPageImage(int id, ImageData image) {
+        mutateImage(id, e->image);
     }
 
     @Override
@@ -180,54 +224,83 @@ public abstract class BookEditScreenMixin extends Screen {
         urlField.setMaxLength(256);//+1 to be able to notify user it is too long
         urlField.setChangedListener((url) -> {
             try {
-                if (url.equals(currentEdited.url)) return;
+                if (url.equals(getCurrentEdited().url)) return;
                 if (url.length() > 255) {
                     urlField.setText(I18n.translate("imaginebook.error.too_long"));
                     return;
                 }
                 new URL(url).toURI();
-                currentEdited.url = Imaginebook.fixImgurLink(url);
+                mutateImage(currentEdited,(imageData -> {
+                    imageData.height = 1;
+                    imageData.width = 1;
+                    imageData.url = Imaginebook.fixImgurLink(url);
+                    return imageData;
+                }));
             } catch (MalformedURLException | URISyntaxException e) {
             }
         });
         addButton = addDrawableChild(ButtonWidget.builder(Text.translatable("imaginebook.gui.add"), (b) -> {
             var newImage = new ImageData("", (short) 0, (short) 0, 1, 1);
-            imaginebook_pages.get(currentPage).add(newImage);
-            setCurrentEdited(newImage);
+            addCurrentPageImage(newImage);
+            setCurrentEdited(display_pages.get(currentPage).size()-1);
         }).position(gap, heightOffset + gap).size(fieldWidth / 2 - gap, elementHeight).build());
         removeButton = addDrawableChild(ButtonWidget.builder(Text.translatable("imaginebook.gui.remove"), (b) -> {
-            currentEdited.height = 0;
-            currentEdited.width = 0;
-            setCurrentEdited(null);
+            mutateImage(currentEdited,(imageData -> {
+                setCurrentEdited(-1);
+                return new DeletedImageData();
+            }));
         }).position(fieldWidth / 2 + gap + gap, heightOffset + gap).size(fieldWidth / 2 - gap, elementHeight).build());
 
         // x position elements
         xPosButton = addDrawableChild(ButtonWidget.builder(Text.literal("⇄"), (b) -> {
         }).position(gap, heightOffset + 2 * (elementHeight + gap) + gap).size(20, elementHeight).build());
         xPosField = addDrawableChild(new TextFieldWidget(client.textRenderer, 24 + gap, heightOffset + 2 * (elementHeight + gap) + gap, fieldWidth / 2 - 24 - gap / 2, elementHeight, Text.empty()));
-        xPosField.setChangedListener(createSetter(x -> currentEdited.x = x, xPosField));
+        xPosField.setChangedListener(createSetter(x -> {
+            mutateImage(currentEdited,(imageData -> {
+                imageData.x = x;
+                return imageData;
+            }));
+        }, xPosField));
 
         yPosButton = addDrawableChild(ButtonWidget.builder(Text.literal("⇅"), (b) -> {
         }).position(gap, heightOffset + 3 * (elementHeight + gap) + gap).size(20, elementHeight).build());
         yPosField = addDrawableChild(new TextFieldWidget(client.textRenderer, 24 + gap, heightOffset + 3 * (elementHeight + gap) + gap, fieldWidth / 2 - 24 - gap / 2, elementHeight, Text.empty()));
-        yPosField.setChangedListener(createSetter(y -> currentEdited.y = y, yPosField));
+        yPosField.setChangedListener(createSetter(y -> {
+            mutateImage(currentEdited,(imageData -> {
+                imageData.y = y;
+                return imageData;
+            }));
+        }, yPosField));
 
         widthButton = addDrawableChild(ButtonWidget.builder(Text.literal("⇔"), (b) -> {
         }).position(fieldWidth / 2 + gap, heightOffset + 2 * (elementHeight + gap) + gap).size(20, elementHeight).build());
         widthField = addDrawableChild(new TextFieldWidget(client.textRenderer, fieldWidth / 2 + 24 - gap / 2 + gap, heightOffset + 2 * (elementHeight + gap) + gap, fieldWidth / 2 - 24 - gap / 2, elementHeight, Text.empty()));
-        widthField.setChangedListener(createSetter(w -> currentEdited.width = (w / new ImageRequest(currentEdited.url).getTexture().getRight().getWidth()), widthField));
+        widthField.setChangedListener(createSetter(w -> {
+            mutateImage(currentEdited,(imageData -> {
+                imageData.width = (w / new ImageRequest(getCurrentEdited().url).getTexture().getRight().getWidth());
+                return imageData;
+            }));
+        }, widthField));
 
         heightButton = addDrawableChild(ButtonWidget.builder(Text.literal("⇕"), (b) -> {
         }).position(fieldWidth / 2 + gap, heightOffset + 3 * (elementHeight + gap) + gap).size(20, elementHeight).build());
         heightField = addDrawableChild(new TextFieldWidget(client.textRenderer, fieldWidth / 2 + 24 - gap / 2 + gap, heightOffset + 3 * (elementHeight + gap) + gap, fieldWidth / 2 - 24 - gap / 2, elementHeight, Text.empty()));
-        heightField.setChangedListener(createSetter(h -> currentEdited.height = (h / new ImageRequest(currentEdited.url).getTexture().getRight().getHeight()), heightField));
+        heightField.setChangedListener(createSetter(h -> {
+            mutateImage(currentEdited,(imageData -> {
+                imageData.height = (h / new ImageRequest(getCurrentEdited().url).getTexture().getRight().getHeight());
+                return imageData;
+            }));
+        }, heightField));
 
         spinButton = addDrawableChild(ButtonWidget.builder(Text.literal("↻"), (b) -> {
         }).position(gap, heightOffset + 4 * (elementHeight + gap) + gap).size(20, elementHeight).build());
         spinField = addDrawableChild(new TextFieldWidget(client.textRenderer, 24 + gap, heightOffset + 4 * (elementHeight + gap) + gap, fieldWidth - gap - 24, elementHeight, Text.empty()));
         spinField.setChangedListener(createSetter(h -> {
-            currentEdited.rotation = 0;
-            currentEdited.rotate(h);
+            mutateImage(currentEdited,(imageData -> {
+                imageData.rotation = 0;
+                imageData.rotate(h);
+                return imageData;
+            }));
         }, spinField));
 
 
@@ -244,22 +317,28 @@ public abstract class BookEditScreenMixin extends Screen {
         spinField.setVisible(false);
         spinButton.visible = false;
 
+        updateFields();
+
+    }
+
+    private ImageData getCurrentEdited() {
+        return getCurrentPageImage(currentEdited);
     }
 
     private void updateFields() {
         List<Integer> pageErrors = new ArrayList<>();
-        for (int i = 0; i < pages.size(); i++) {
-            var img_page = imaginebook_pages.get(i);
-            if (img_page == null || img_page.size() == 0)
-                continue;
-
-            var used = getEncoded(imaginebook_pages.get(i)).length();
-            var left = 1000 - pages.get(i).length();
-
-            if (used > left) {
-                pageErrors.add(i);
-            }
-        }
+//        for (int i = 0; i < pages.size(); i++) {
+//            var img_page = display_pages.get(i);
+//            if (img_page == null || img_page.size() == 0)
+//                continue;
+//
+//            var used = getEncoded(display_pages.get(i)).length();
+//            var left = 1000 - pages.get(i).length();
+//
+//            if (used > left) {
+//                pageErrors.add(i);
+//            }
+//        }
         if (pageErrors.size() > 0) {
             signing = false;
             Imaginebook.cancelledFinalize = true;
@@ -270,17 +349,28 @@ public abstract class BookEditScreenMixin extends Screen {
         }
 
 
-        if (currentEdited == null)
+        if (currentEdited == -1)
             return;
 
-        var image = new ImageRequest(currentEdited.url);
+        var image = new ImageRequest(getCurrentEdited().url);
         Image.ImageSize nativeImage = image.getTexture().getRight();
-        urlField.setText(currentEdited.url);
-        xPosField.setText((int) currentEdited.x() + "");
-        yPosField.setText((int) currentEdited.y() + "");
-        widthField.setText(currentEdited.width(nativeImage) + "");
-        heightField.setText(currentEdited.height(nativeImage) + "");
-        spinField.setText(currentEdited.rotation + "");
+
+        urlField.setText(getCurrentEdited().url);
+
+        String value3 = (int) getCurrentEdited().x() + "";
+        xPosField.setText(value3);
+
+        String value2 = (int) getCurrentEdited().y() + "";
+        yPosField.setText(value2);
+
+        String value1 = getCurrentEdited().width(nativeImage) + "";
+        widthField.setText(value1);
+
+        String value = getCurrentEdited().height(nativeImage) + "";
+        heightField.setText(value);
+
+        spinField.setText(getCurrentEdited().rotation + "");
+
 
     }
 
@@ -288,13 +378,14 @@ public abstract class BookEditScreenMixin extends Screen {
         return (value) -> {
             try {
                 float number = Float.parseFloat(value);
-                setter.accept(number);
-                if ("0".equals(String.valueOf(Math.round(number)))) {
+                if (String.valueOf(Math.round(number)).equals("0")) {
                     setter.accept(0f);
                 } else if (!fieldWidget.getText().equals(String.valueOf(Math.round(number)))) {
                     fieldWidget.setText(String.valueOf(Math.round(number)));
                 }
-
+                else{
+                    setter.accept(number);
+                }
             } catch (NumberFormatException e) {
 
             }
@@ -303,7 +394,7 @@ public abstract class BookEditScreenMixin extends Screen {
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     void mouseClicked(double mouseX, double mouseY, int mouseButton, CallbackInfoReturnable<Boolean> cir) {
-        var images = imaginebook_pages.get(currentPage);
+        var images = display_pages.get(currentPage);
         if (signing)
             return;
         var buttons = new ButtonWidget[]{nextPageButton, previousPageButton, signButton, doneButton};
@@ -314,13 +405,15 @@ public abstract class BookEditScreenMixin extends Screen {
                 return;
             }
         }
+        int i = 0;
         for (var image : images) {
             if (isMouseOver(image, mouseX, mouseY)) {
-                setCurrentEdited(image);
-                draggedByMouse = image;
+                setCurrentEdited(i);
+                draggedByMouse = i;
                 cir.setReturnValue(true);
                 return;
             }
+            i++;
         }
 
         if (isMouseOver(new ImageData("", (short) 0, (short) 0, (short) 192, (short) 192), mouseX, mouseY)) {
@@ -328,7 +421,7 @@ public abstract class BookEditScreenMixin extends Screen {
         }
     }
 
-    public ImageData draggedByMouse = null;
+    public int draggedByMouse = -1;
     public double bufferX, bufferY;
 
     @Inject(method = "mouseDragged", at = @At("HEAD"), cancellable = true)
@@ -341,11 +434,14 @@ public abstract class BookEditScreenMixin extends Screen {
 //                break;
 //            }
 //        }
-        if (draggedByMouse != null) {
+        if (draggedByMouse != -1) {
             bufferX += deltaX;
             bufferY += deltaY;
-            draggedByMouse.x += (int) bufferX;
-            draggedByMouse.y += (int) bufferY;
+            mutateImage(draggedByMouse,(imageData -> {
+                imageData.x += (int) bufferX;
+                imageData.y += (int) bufferY;
+                return imageData;
+            }));
             bufferX -= (int) bufferX;
             bufferY -= (int) bufferY;
             cir.setReturnValue(true);
@@ -355,11 +451,42 @@ public abstract class BookEditScreenMixin extends Screen {
 
     @Override
     public boolean mouseReleased(double mouseX, double mouseY, int button) {
-        if (draggedByMouse != null) {
+        if (draggedByMouse != -1) {
             updateFields();
-            draggedByMouse = null;
+            draggedByMouse = -1;
         }
         return super.mouseReleased(mouseX, mouseY, button);
+    }
+
+    void mutateImage(int id, Function<ImageData,ImageData> function){
+        if(id == -1)
+            return;
+        getCurrentPageImage(id);
+        var original = new ImageData(getCurrentPageImage(id));
+        var modifiedImage = function.apply(original);
+        Pattern pattern = Pattern.compile("\\[.*?\\]");
+
+        Matcher matcher = pattern.matcher(getCurrentPageContent());
+
+        List<ImageData> images = new ArrayList<>();
+        int index = 0;
+
+        var newPage = getCurrentPageContent();
+        while (matcher.find()) {
+            var start = matcher.start();
+            var end = matcher.end();
+
+            if(index == id){
+                var buf = new StringBuffer(newPage).delete(start, end).insert(start,modifiedImage.bookString());
+                newPage = buf.toString();
+                break;
+            }
+            index++;
+        }
+        setCurrentPageContent(newPage);
+        updateDisplayImages();
+
+
     }
 
     @Override
@@ -376,23 +503,35 @@ public abstract class BookEditScreenMixin extends Screen {
                 verticalAmount *= 5;
             }
             boolean pressed = false;
-            if (currentEdited != null) {
-                Image.ImageSize currentNativeImage = new ImageRequest(currentEdited.url).getTexture().getRight();
-
+            if (getCurrentEdited() != null) {
+                final double finalVerticalAmount = verticalAmount;
+                Image.ImageSize currentNativeImage = new ImageRequest(getCurrentEdited().url).getTexture().getRight();
                 if (xPosButton.isMouseOver(mouseX, mouseY) || xPosField.isMouseOver(mouseX, mouseY)) {
-                    currentEdited.x += verticalAmount;
+                    mutateImage(currentEdited,(imageData -> {
+                        imageData.x += (float) finalVerticalAmount;
+                        return imageData;
+                    }));
                     pressed = true;
                 }
                 if (yPosButton.isMouseOver(mouseX, mouseY) || yPosField.isMouseOver(mouseX, mouseY)) {
-                    currentEdited.y += verticalAmount;
+                    mutateImage(currentEdited,(imageData -> {
+                        imageData.y += (float) finalVerticalAmount;
+                        return imageData;
+                    }));
                     pressed = true;
                 }
                 if (widthButton.isMouseOver(mouseX, mouseY) || widthField.isMouseOver(mouseX, mouseY)) {
-                    currentEdited.width += (float) (verticalAmount / currentNativeImage.getWidth());
+                    mutateImage(currentEdited,(imageData -> {
+                        imageData.width += (float) (finalVerticalAmount / currentNativeImage.getWidth());
+                        return imageData;
+                    }));
                     pressed = true;
                 }
                 if (heightButton.isMouseOver(mouseX, mouseY) || heightField.isMouseOver(mouseX, mouseY)) {
-                    currentEdited.height += (float) (verticalAmount / currentNativeImage.getHeight());
+                    mutateImage(currentEdited,(imageData -> {
+                        imageData.height += (float) (finalVerticalAmount / currentNativeImage.getHeight());
+                        return imageData;
+                    }));
                     pressed = true;
                 }
                 if (spinButton.isMouseOver(mouseX, mouseY) || spinField.isMouseOver(mouseX, mouseY)) {
@@ -405,43 +544,55 @@ public abstract class BookEditScreenMixin extends Screen {
                     if (verticalAmount == -125)
                         verticalAmount = -90;
 
-                    currentEdited.rotate((float) verticalAmount);
+                    mutateImage(currentEdited,(imageData -> {
+                        imageData.rotate((float) finalVerticalAmount);
+                        return imageData;
+                    }));
                     pressed = true;
                 }
             }
 
             if (!pressed) {
-                ImageData targetImage = null;
-                for (ImageData image : imaginebook_pages.get(currentPage)) {
+                int targetImage1 = -1;
+                int i = 0;
+                for (ImageData image : display_pages.get(currentPage)) {
                     if (isMouseOver(image, mouseX, mouseY)) {
-                        if (targetImage == null) {
-                            targetImage = image;
+                        if (targetImage1 == -1) {
+                            targetImage1 = i;
                             break;
                         }
                     }
+                    i++;
                 }
-                if (draggedByMouse != null)
-                    targetImage = draggedByMouse;
-                if (targetImage != null) {
-                    Image.ImageSize targetNativeImage = new ImageRequest(targetImage.url).getTexture().getRight();
-                    if (hasShiftDown() || hasAltDown()) {
-                        verticalAmount /= 5;
-                    }
-                    double pow = Math.pow(1.00 + Math.abs(verticalAmount * 0.01), Math.signum(verticalAmount));
+                if (draggedByMouse != -1)
+                    targetImage1 = draggedByMouse;
 
-                    var min = Math.min(targetImage.width(targetNativeImage), targetImage.height(targetNativeImage));
-                    if (Math.abs(min - min * pow) < 1) {
-                        pow = (min + verticalAmount) / min;
-                    }
+                final double finalVerticalAmount = verticalAmount;
+                mutateImage(draggedByMouse, targetImage -> {
+                    var localVerticalAmount = finalVerticalAmount;
+                    if (targetImage != null) {
+                        Image.ImageSize targetNativeImage = new ImageRequest(targetImage.url).getTexture().getRight();
+                        if (hasShiftDown() || hasAltDown()) {
+                            localVerticalAmount /= 5;
+                        }
+                        double pow = Math.pow(1.00 + Math.abs(localVerticalAmount * 0.01), Math.signum(localVerticalAmount));
 
-                    if (!hasAltDown()) {
-                        targetImage.width *= pow;
-                    }
-                    if (!hasShiftDown()) {
-                        targetImage.height *= pow;
-                    }
+                        var min = Math.min(targetImage.width(targetNativeImage), targetImage.height(targetNativeImage));
+                        if (Math.abs(min - min * pow) < 1) {
+                            pow = (min + localVerticalAmount) / min;
+                        }
 
-                }
+                        if (!hasAltDown()) {
+                            targetImage.width *= pow;
+                        }
+                        if (!hasShiftDown()) {
+                            targetImage.height *= pow;
+                        }
+
+                    }
+                    return targetImage;
+                });
+
 
             }
             updateFields();
@@ -458,13 +609,17 @@ public abstract class BookEditScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("TAIL"))
     void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        var left = 1000 - pages.get(currentPage).length() - getEncoded(imaginebook_pages.get(currentPage)).length();
-        lengthLeft = Text.translatable("imaginebook.gui.used", left);
+        //var left = 1000 - pages.get(currentPage).length() - getEncoded(display_pages.get(currentPage)).length();
+        //lengthLeft = Text.translatable("imaginebook.gui.used", left);
+        currentPage = MathHelper.clamp(currentPage, -1, display_pages.size() - 1);
+
+
+        doneButton.active = pageContent.lines.length <= 14;
 
         if (error != null) {
             context.drawCenteredTextWithShadow(client.textRenderer, error, width / 2, height - 20, VersionFunctions.ColorHelper.getArgb(255, 100, 100));
         }
-        boolean editing = currentEdited != null;
+        boolean editing = currentEdited != -1;
         if (signing) {
             editing = false;
         }
@@ -491,8 +646,7 @@ public abstract class BookEditScreenMixin extends Screen {
         int bookY = 2;
 
         var combined = new ArrayList<ImageData>();
-        combined.addAll(imaginebook_pages.get(currentPage));
-        combined.addAll(imaginebook_safe_pages.get(currentPage));
+        combined.addAll(display_pages.get(currentPage));
         for (ImageData imageData : combined.reversed()) {
             RenderSystem.disableCull();
             RenderSystem.enableBlend();
@@ -504,7 +658,7 @@ public abstract class BookEditScreenMixin extends Screen {
 
         }
 
-        var images = (imaginebook_pages.get(currentPage));
+        var images = (display_pages.get(currentPage));
         if (images != null) {
             for (ImageData imageData : images) {
                 if (isMouseOver(imageData, mouseX, mouseY)) {
@@ -532,14 +686,15 @@ public abstract class BookEditScreenMixin extends Screen {
 
         this.drawSelection(context, pageContent.selectionRectangles);
         this.drawCursor(context, pageContent.position, pageContent.atEnd);
-        if (!signing) {
-            context.drawTextWithShadow(client.textRenderer, lengthLeft, width - 4 - client.textRenderer.getWidth(lengthLeft), 4, 0xFFFFFFFF);
+
+        if(pageContent.lines.length > 14){
+            context.drawCenteredTextWithShadow(client.textRenderer, Text.translatable("imaginebook.error.too_much_lines"), width / 2, 222, VersionFunctions.ColorHelper.getArgb(255, 100, 100));
         }
     }
 
 
     public boolean isMouseOver(ImageData imageData, double mouseX, double mouseY) {
-        return ImageData.isMouseOverImage(imageData, mouseX, mouseY, this.width / 2);
+        return isMouseOverImage(imageData, mouseX, mouseY, this.width / 2);
     }
 
 
@@ -553,15 +708,15 @@ public abstract class BookEditScreenMixin extends Screen {
             return;
         }
         for (int i = 0; i < pages.size(); i++) {
-            var page = pages.get(i);
-            var img_page = imaginebook_pages.get(i);
-            if (img_page == null || img_page.size() == 0)
-                continue;
-
-            var bytes = getEncoded(img_page);
-            var data = "\n" + bytes;
-            page = page + Strings.repeat("\n", Imaginebook.LENGTH - page.length() - data.length()) + data;
-            pages.set(i, page);
+//            var page = pages.get(i);
+//            var img_page = imaginebook_pages.get(i);
+//            if (img_page == null || img_page.size() == 0)
+//                continue;
+//
+//            var bytes = getEncoded(img_page);
+//            var data = "\n" + bytes;
+//            page = page + Strings.repeat("\n", Imaginebook.LENGTH - page.length() - data.length()) + data;
+//            pages.set(i, page);
         }
     }
 

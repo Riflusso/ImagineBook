@@ -77,17 +77,16 @@ public class ImageSerializer {
 
         List<ImageData> images = new ArrayList<>();
         while (matcher.find()) {
+            var str = matcher.group();
+            if (str == null) {
+                continue;
+            }
+            var data = new ImageData();
             try {
-                var str = matcher.group();
-                if (str == null) {
-                    continue;
-                }
                 var elements = Arrays.stream(str
                         .replace("[", "")
                         .replace("]", "")
                         .split("[,]")).toArray(String[]::new);
-
-                var data = new ImageData();
                 data.url = elements[0];
 
 
@@ -114,10 +113,10 @@ public class ImageSerializer {
                     data.rotation = Float.parseFloat(numbers[4]);
                 }
 
-                images.add(data);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+            images.add(data);
         }
         return images;
     }

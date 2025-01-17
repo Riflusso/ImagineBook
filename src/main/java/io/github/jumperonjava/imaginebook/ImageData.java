@@ -4,7 +4,7 @@ import net.minecraft.client.texture.NativeImage;
 
 import java.util.Objects;
 
-public final class ImageData {
+public class ImageData {
     public String url;
     public float x;
     public float y;
@@ -19,7 +19,35 @@ public final class ImageData {
         this.width = width;
         this.height = height;
     }
+    public ImageData(ImageData image) {
+        this.url = image.url;
+        this.x = image.x;
+        this.y = image.y;
+        this.width = image.width;
+        this.height = image.height;
+        this.rotation = image.rotation;
+    }
     public ImageData() {}
+
+    public static boolean isMouseOverImage(ImageData imageData, double mouseX, double mouseY, int i) {
+        int bookX = i - 96;
+        int bookY = 2;
+
+        var image = new ImageRequest(imageData.url);
+        Image.ImageSize nativeImage = image.getTexture().getRight();
+
+        double imageX1 = imageData.x() + bookX;
+        double imageY1 = imageData.y() + bookY;
+        double imageX2 = imageX1 + imageData.width(nativeImage);
+        double imageY2 = imageY1 + imageData.height(nativeImage);
+
+        double minX = Math.min(imageX1, imageX2);
+        double maxX = Math.max(imageX1, imageX2);
+        double minY = Math.min(imageY1, imageY2);
+        double maxY = Math.max(imageY1, imageY2);
+
+        return mouseX >= minX && mouseX < maxX && mouseY >= minY && mouseY < maxY;
+    }
 
     public String url() {
         return url;
@@ -67,6 +95,18 @@ public final class ImageData {
                 "width=" + width + ", " +
                 "height=" + height + ']';
     }
+
+    public String bookString() {
+        return "[%s,%.2f,%.2f,%.2f,%.2f,%.2f]".formatted(
+                url,
+                x,
+                y,
+                width * 100,
+                height * 100,
+                rotation
+        ).replaceAll("\\.00(?!\\d)", "").replaceAll("(\\.\\d)0(?!\\d)", "$1");
+    }
+
 
     public void rotate(float degrees) {
         this.rotation += degrees;
