@@ -46,6 +46,8 @@ import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static io.github.jumperonjava.imaginebook.ImageData.isMouseOverImage;
+
 @Mixin(BookEditScreen.class)
 public abstract class NewBookEditScreenMixin extends Screen {
 
