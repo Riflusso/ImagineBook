@@ -51,9 +51,18 @@ public class BookScreenMixin extends Screen {
         for(int i=0;i<255;i++){
             imaginebook_pages.add(new ArrayList<>());
         }
-        var pages = contents.pages();
-        for (int i = 0; i < pages.size(); i++) {
+
+        //? if >= 1.21.1
+        /*var pages = contents.pages();*/
+
+        //? if >= 1.21.1 {
+        /*for (int i = 0; i < pages.size(); i++) {
             var page = pages.get(i).getString();
+        *///?} else {
+        for (int i = 0; i < contents.getPageCount(); i++) {
+            var page = contents.getPage(i).getString();
+        //?}
+
 
             if (page.length() == Imaginebook.LENGTH) {
                 var split = page.split("\n");
