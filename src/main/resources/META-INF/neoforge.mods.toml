@@ -4,7 +4,7 @@ license = "LGPLv3"
 issueTrackerURL="https://github.com/jumperonjava/ImagineBook/issues"
 
 [[mods]]
-modId = "imaginebook"
+modId = "${id}"
 version = "${version}"
 displayName = "${name}"
 authors = "JavaJumper"
