@@ -1,18 +1,18 @@
 package io.github.jumperonjava.imaginebook;
 
+import com.ibm.icu.impl.InvalidFormatException;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.*;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.HashMap;
 
 /*? if fabric {*/
@@ -84,20 +84,72 @@ public class ImageRequest {
                     break;
                 new Thread(() -> {
                     currentDownloads++;
-                    info.status= TextureRequestInfo.DownloadStatus.DOWNLOADING;
-                    try {
-                        InputStream in = new URL(getDownloadLink()).openStream();
+                    info.status = TextureRequestInfo.DownloadStatus.DOWNLOADING;
+                    LoggerFactory.getLogger("ImagineBook").info(String.format("Downloading %s",link));
+
+                    try (InputStream in = new URL(getDownloadLink()).openStream();
+                         OutputStream out = Files.newOutputStream(getFile(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+
                         Files.createDirectories(getFile().getParent());
-                        Files.copy(in, getFile(), StandardCopyOption.REPLACE_EXISTING);
+
+                        byte[] buffer = new byte[8192];
+                        byte[] pngHeader = new byte[8];
+                        int bytesRead;
+                        long totalBytesRead = 0;
+                        long maxSize = 8 * 1024 * 1024;
+
+                        if (in.read(pngHeader) != 8 || !isPngHeaderValid(pngHeader)) {
+                            info.identifier = Identifier.of("imaginebook","textures/png_error.png");
+                            throw new InvalidFormatException("File is not a valid PNG.");
+                        }
+                        out.write(pngHeader);
+                        totalBytesRead += pngHeader.length;
+                        LoggerFactory.getLogger("ImagineBook").info(String.format("Download size %d", totalBytesRead));
+
+                        while ((bytesRead = in.read(buffer)) != -1) {
+                            totalBytesRead += bytesRead;
+                            if (totalBytesRead > maxSize) {
+                                info.identifier = Identifier.of("imaginebook","textures/size_error.png");
+                                throw new InvalidFormatException("File size exceeds 1MB limit.");
+                            }
+                            out.write(buffer, 0, bytesRead);
+                        }
+
                         info.status = TextureRequestInfo.DownloadStatus.DOWNLOADED_NOT_REGISTERED;
-                    } catch (Exception e) {
-                        info.status = TextureRequestInfo.DownloadStatus.DOWNLOAD_ERROR;
+
                     }
+                    catch (InvalidFormatException e){
+                        TextureMap.put(hashCode(), info);
+                        info.status = TextureRequestInfo.DownloadStatus.CUSTOM_ERROR;
+                        e.printStackTrace();
+                        try {
+                            Files.deleteIfExists(getFile());
+                        } catch (IOException deleteException) {
+                            System.err.println("Failed to clean up incomplete file: " + getFile());
+                            deleteException.printStackTrace();
+                        }
+                        currentDownloads--;
+                        return;
+                    }
+                    catch (Exception e) {
+                        info.status = TextureRequestInfo.DownloadStatus.DOWNLOAD_ERROR;
+                        e.printStackTrace();
+
+                        try {
+                            Files.deleteIfExists(getFile());
+                        } catch (IOException deleteException) {
+                            System.err.println("Failed to clean up incomplete file: " + getFile());
+                            deleteException.printStackTrace();
+                        }
+                    }
+
                     currentDownloads--;
                 }).start();
             }
             case DOWNLOADING -> {
-                LoggerFactory.getLogger("abc").info(String.format("Downloading %s",link));
+            }
+            case CUSTOM_ERROR ->{
+                return new Image(info.identifier,new Image.ImageSize(128,128),"");
             }
             case DOWNLOAD_ERROR ->
             {
@@ -131,6 +183,10 @@ public class ImageRequest {
         return new Image(EMPTY_TEXTURE,new Image.ImageSize(100,100), link);
 
     }
+    private boolean isPngHeaderValid(byte[] header) {
+        byte[] validPngHeader = {(byte) 0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A};
+        return Arrays.equals(header, validPngHeader);
+    }
 
     @Override
     public int hashCode() {
@@ -155,7 +211,7 @@ public class ImageRequest {
             DOWNLOADING,
             DOWNLOAD_ERROR,
             DOWNLOADED_NOT_REGISTERED,
-            READY,
+            READY, CUSTOM_ERROR, SIZE_ERROR,
         }
     }
 
