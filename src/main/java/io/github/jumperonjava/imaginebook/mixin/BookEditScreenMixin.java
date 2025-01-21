@@ -5,7 +5,6 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.jumperonjava.imaginebook.*;
 import io.github.jumperonjava.imaginebook.util.VersionFunctions;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
@@ -39,6 +38,12 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.function.Consumer;
+
+/*? if fabric {*/
+import net.fabricmc.loader.api.FabricLoader;
+/*?} elif neoforge {*//*
+import net.neoforged.fml.ModList;
+*//*?}*/
 
 @Mixin(BookEditScreen.class)
 public abstract class BookEditScreenMixin extends Screen {
@@ -172,9 +177,15 @@ public abstract class BookEditScreenMixin extends Screen {
         int fieldWidth = 200;
         int heightOffset = 0;
 
+        /*? if fabric {*/
         if (FabricLoader.getInstance().isModLoaded("stendhal")) {
             heightOffset = 140;
         }
+        /*?} elif neoforge {*//*
+        if (ModList.get().isLoaded("stendhal")) {
+            heightOffset = 140;
+        }
+        *//*?}*/
 
         urlField = addDrawableChild(new TextFieldWidget(client.textRenderer, gap, heightOffset +(elementHeight + gap) + gap, fieldWidth, elementHeight, Text.translatable("imaginebook.gui.urlhere")));
         urlField.setMaxLength(256);//+1 to be able to notify user it is too long

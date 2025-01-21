@@ -1,6 +1,5 @@
 package io.github.jumperonjava.imaginebook;
 
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
@@ -15,6 +14,13 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
+
+/*? if fabric {*/
+import net.fabricmc.loader.api.FabricLoader;
+/*?} elif neoforge {*//*
+import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLPaths;
+*//*?}*/
 
 
 /**
@@ -43,7 +49,11 @@ public class ImageRequest {
     }
 
     private Path getFile() {
+        /*? if fabric {*/
         return FabricLoader.getInstance().getGameDir().resolve("imaginebook").resolve(getIdentifierString());
+        /*?} elif neoforge {*//*
+        return FMLPaths.GAMEDIR.get().resolve("imaginebook").resolve(getIdentifierString());
+        *//*?}*/
     }
 
     private String getIdentifierString() {
