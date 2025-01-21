@@ -17,7 +17,8 @@ import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.math.Rect2i;
-import net.minecraft.component.type.WritableBookContentComponent;
+//? if >= 1.21.3
+/*import net.minecraft.component.type.WritableBookContentComponent;*/
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
@@ -103,10 +104,10 @@ public abstract class BookEditScreenMixin extends Screen {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     //? if >= 1.21.3 {
-    void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
-    //?} else {
-    /*void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
-    *///?}
+    /*void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
+    *///?} else {
+    void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
+    //?}
         for (int i = 0; i < 250; i++) {
             imaginebook_pages.add(new ArrayList<>());
             imaginebook_safe_pages.add(new ArrayList<>());
@@ -363,7 +364,10 @@ public abstract class BookEditScreenMixin extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+    //? if < 1.20.4
+    public boolean mouseScrolled(double mouseX, double mouseY, double verticalAmount) {
+    //? if >= 1.20.4
+    /*public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {*/
         if (!signing) {
             verticalAmount = Math.signum(verticalAmount);
             if (hasControlDown()) {
@@ -451,7 +455,11 @@ public abstract class BookEditScreenMixin extends Screen {
                 return true;
             }
         }
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        //? if < 1.20.4 {
+        return super.mouseScrolled(mouseX, mouseY, verticalAmount);
+        //?} else {
+        /*return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+         *///?}
     }
 
     Text lengthLeft;
@@ -462,7 +470,7 @@ public abstract class BookEditScreenMixin extends Screen {
         lengthLeft = Text.translatable("imaginebook.gui.used", left);
 
         if (error != null) {
-            context.drawCenteredTextWithShadow(client.textRenderer, error, width / 2, height - 20, VersionFunctions.ColorHelper.getArgb(255, 100, 100));
+            context.drawCenteredTextWithShadow(client.textRenderer, error, width / 2, height - 20, VersionFunctions.ColorHelper.getArgb(255,255, 100, 100));
         }
         boolean editing = currentEdited != null;
         if (signing) {

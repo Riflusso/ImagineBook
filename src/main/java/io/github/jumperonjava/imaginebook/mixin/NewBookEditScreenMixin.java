@@ -19,7 +19,8 @@ import net.minecraft.client.resource.language.I18n;
 import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.Rect2i;
-import net.minecraft.component.type.WritableBookContentComponent;
+//? if >= 1.21.3
+/*import net.minecraft.component.type.WritableBookContentComponent;*/
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
@@ -113,10 +114,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     //? if >= 1.21.3 {
-    void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
-    //?} else {
-    /*void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
-    *///?}
+    /*void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
+    *///?} else {
+    void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
+    //?}
         for (int i = 0; i < 250; i++) {
             display_pages.add(new ArrayList<>());
             //imaginebook_safe_pages.add(new ArrayList<>());
@@ -142,8 +143,9 @@ public abstract class NewBookEditScreenMixin extends Screen {
 //                }
 //            }
             display_pages.set(i, ImageSerializer.parseSafeModeImages(page));
-
         }
+        currentEdited = Math.min(currentEdited, display_pages.get(currentPage).size()-1);
+
     }
 
     private String getCurrentPageContent(){
@@ -225,21 +227,17 @@ public abstract class NewBookEditScreenMixin extends Screen {
         urlField = addDrawableChild(new TextFieldWidget(client.textRenderer, gap, heightOffset +(elementHeight + gap) + gap, fieldWidth, elementHeight, Text.translatable("imaginebook.gui.urlhere")));
         urlField.setMaxLength(256);//+1 to be able to notify user it is too long
         urlField.setChangedListener((url) -> {
-            try {
-                if (url.equals(getCurrentEdited().url)) return;
-                if (url.length() > 255) {
-                    urlField.setText(I18n.translate("imaginebook.error.too_long"));
-                    return;
-                }
-                new URL(url).toURI();
-                mutateImage(currentEdited,(imageData -> {
-                    imageData.height = 1;
-                    imageData.width = 1;
-                    imageData.url = Imaginebook.fixImgurLink(url);
-                    return imageData;
-                }));
-            } catch (MalformedURLException | URISyntaxException e) {
+            if (url.equals(getCurrentEdited().url)) return;
+            if (url.length() > 255) {
+                urlField.setText(I18n.translate("imaginebook.error.too_long"));
+                return;
             }
+            mutateImage(currentEdited, (imageData -> {
+                imageData.height = 1;
+                imageData.width = 1;
+                imageData.url = Imaginebook.fixImgurLink(url);
+                return imageData;
+            }));
         });
         addButton = addDrawableChild(ButtonWidget.builder(Text.translatable("imaginebook.gui.add"), (b) -> {
             var newImage = new ImageData("", (short) 0, (short) 0, 1, 1);
@@ -350,9 +348,9 @@ public abstract class NewBookEditScreenMixin extends Screen {
             error = Text.empty();
         }
 
-
         if (currentEdited == -1)
             return;
+
 
         var image = new ImageRequest(getCurrentEdited().url);
         Image.ImageSize nativeImage = image.getTexture().getRight();
@@ -492,7 +490,11 @@ public abstract class NewBookEditScreenMixin extends Screen {
     }
 
     @Override
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+    //? if < 1.20.4 {
+    public boolean mouseScrolled(double mouseX, double mouseY, double verticalAmount) {
+    //?} else {
+    /*public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+    *///?}
         if (!signing) {
             verticalAmount = Math.signum(verticalAmount);
             if (hasControlDown()) {
@@ -570,7 +572,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
                     targetImage1 = draggedByMouse;
 
                 final double finalVerticalAmount = verticalAmount;
-                mutateImage(draggedByMouse, targetImage -> {
+                mutateImage(targetImage1, targetImage -> {
                     var localVerticalAmount = finalVerticalAmount;
                     if (targetImage != null) {
                         Image.ImageSize targetNativeImage = new ImageRequest(targetImage.url).getTexture().getRight();
@@ -604,7 +606,11 @@ public abstract class NewBookEditScreenMixin extends Screen {
                 return true;
             }
         }
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        //? if < 1.20.4 {
+        return super.mouseScrolled(mouseX, mouseY, verticalAmount);
+        //?} else {
+        /*return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        *///?}
     }
 
     Text lengthLeft;
@@ -616,10 +622,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
         currentPage = MathHelper.clamp(currentPage, -1, display_pages.size() - 1);
 
 
-        doneButton.active = pageContent.lines.length <= 14;
+        doneButton.active = getPageContent().lines.length <= 14;
 
         if (error != null) {
-            context.drawCenteredTextWithShadow(client.textRenderer, error, width / 2, height - 20, VersionFunctions.ColorHelper.getArgb(255, 100, 100));
+            context.drawCenteredTextWithShadow(client.textRenderer, error, width / 2, height - 20, VersionFunctions.ColorHelper.getArgb(255,255, 100, 100));
         }
         boolean editing = currentEdited != -1;
         if (signing) {
@@ -680,17 +686,16 @@ public abstract class NewBookEditScreenMixin extends Screen {
         int j = 2;
         int n = this.textRenderer.getWidth(this.pageIndicatorText);
         context.drawText(this.textRenderer, this.pageIndicatorText, i - n + 192 - 44, 18, 0x3F000000, false);
-        var pageContent = this.getPageContent();
 
-        for(var line : pageContent.lines) {
+        for(var line : this.getPageContent().lines) {
             context.drawText(this.textRenderer, line.text, line.x, line.y, 0x3F000000, false);
         }
 
-        this.drawSelection(context, pageContent.selectionRectangles);
-        this.drawCursor(context, pageContent.position, pageContent.atEnd);
+        this.drawSelection(context, this.getPageContent().selectionRectangles);
+        this.drawCursor(context, this.getPageContent().position, this.getPageContent().atEnd);
 
-        if(pageContent.lines.length > 14){
-            context.drawCenteredTextWithShadow(client.textRenderer, Text.translatable("imaginebook.error.too_much_lines"), width / 2, 222, VersionFunctions.ColorHelper.getArgb(255, 100, 100));
+        if(this.getPageContent().lines.length > 14){
+            context.drawCenteredTextWithShadow(client.textRenderer, Text.translatable("imaginebook.error.too_much_lines"), width / 2, 222, VersionFunctions.ColorHelper.getArgb(255, 255, 100, 100));
         }
     }
 

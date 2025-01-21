@@ -11,3 +11,4 @@ accessible field net/minecraft/client/gui/screen/ingame/BookEditScreen$PageConte
 accessible class net/minecraft/client/gui/screen/ingame/BookEditScreen$Position
 accessible field net/minecraft/client/gui/widget/TextFieldWidget text Ljava/lang/String;
 accessible field net/minecraft/client/gui/widget/TextFieldWidget selectionStart I
+accessible method net/minecraft/client/gui/screen/Screen blur ()V
