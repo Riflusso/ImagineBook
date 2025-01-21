@@ -634,6 +634,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
 
         doneButton.active = getPageContent().lines.length <= 14;
+        signButton.active = getPageContent().lines.length <= 14;
 
         if (error != null) {
             context.drawCenteredTextWithShadow(client.textRenderer, error, width / 2, height - 20, VersionFunctions.ColorHelper.getArgb(255,255, 100, 100));
