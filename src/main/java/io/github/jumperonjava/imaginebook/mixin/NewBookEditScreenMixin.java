@@ -7,6 +7,7 @@ import io.github.jumperonjava.imaginebook.*;
 import io.github.jumperonjava.imaginebook.util.DeletedImageData;
 import io.github.jumperonjava.imaginebook.util.VersionFunctions;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
 import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
@@ -222,21 +223,89 @@ public abstract class NewBookEditScreenMixin extends Screen {
     void init(CallbackInfo ci) {
         int elementHeight = 20;
         int gap = 4;
-        int fieldWidth = 200;
-        int heightOffset = 0;
+        int heightOffset = height - 50;
+        int columnSize =  100 - gap;
+        int smallFieldWidth = columnSize - 24;
 
         /*? if fabric {*/
-        if (FabricLoader.getInstance().isModLoaded("stendhal")) {
-            heightOffset = 140;
-        }
+        //if (FabricLoader.getInstance().isModLoaded("stendhal")) {
+        //    heightOffset = 140;
+        //    availableHeight = height - heightOffset;
+        //}
         /*?} elif neoforge {*//*
-        if (ModList.get().isLoaded("stendhal")) {
-            heightOffset = 140;
-        }
+        //if (ModList.get().isLoaded("stendhal")) {
+        //    heightOffset = 140;
+        //    availableHeight = height - heightOffset;
+        //}
         *//*?}*/
 
-        urlField = addDrawableChild(new TextFieldWidget(client.textRenderer, gap, heightOffset +(elementHeight + gap) + gap, fieldWidth, elementHeight, Text.translatable("imaginebook.gui.urlhere")));
-        urlField.setMaxLength(256);//+1 to be able to notify user it is too long
+        int[] row = new int[10];
+        int[] column = new int[10];
+        int[] fieldColumn = new int[10];
+        for (int i = 0; i < 10; ++i) {
+            row[i] = i * (elementHeight + gap) + gap;
+        }
+        for (int i = 0; i < 10; ++i) {
+            column[i] = i * (columnSize+gap) + gap;
+        }
+        for (int i = 0; i < 10; ++i) {
+            fieldColumn[i] = column[i] + 24;
+        }
+
+        int urlFieldX = column[0];
+        int urlFieldY = row[0];
+        int urlFieldWidth = (columnSize)*2+gap;
+
+        int addButtonX = column[0];
+        int addButtonY = row[1];
+        int addButtonWidth = columnSize;
+
+        int removeButtonX = column[1];
+        int removeButtonY = row[1];
+        int removeButtonWidth = columnSize;
+
+        int xPosButtonX = column[2];
+        int xPosButtonY = row[0];
+        int xPosFieldX = fieldColumn[2];
+        int xPosFieldY = row[0];
+
+        int yPosButtonX = column[2];
+        int yPosButtonY = row[1];
+        int yPosFieldX = fieldColumn[2];
+        int yPosFieldY = row[1];
+
+        int widthButtonX = column[3];
+        int widthButtonY = row[0];
+        int widthFieldX = fieldColumn[3];
+        int widthFieldY = row[0];
+
+        int heightButtonX = column[3];
+        int heightButtonY = row[1];
+        int heightFieldX = fieldColumn[3];
+        int heightFieldY = row[1];
+
+        int spinButtonX = column[4];
+        int spinButtonY = row[1];
+        int spinFieldX = fieldColumn[4];
+        int spinFieldY = row[1];
+
+        urlFieldY += heightOffset;
+        addButtonY += heightOffset;
+        removeButtonY += heightOffset;
+        xPosButtonY += heightOffset;
+        xPosFieldY += heightOffset;
+        yPosButtonY += heightOffset;
+        yPosFieldY += heightOffset;
+        widthButtonY += heightOffset;
+        widthFieldY += heightOffset;
+        heightButtonY += heightOffset;
+        heightFieldY += heightOffset;
+        spinButtonY += heightOffset;
+        spinFieldY += heightOffset;
+
+
+        urlField = addDrawableChild(new TextFieldWidget(client.textRenderer, urlFieldX, urlFieldY, urlFieldWidth, elementHeight, Text.translatable("imaginebook.gui.urlhere")));
+        urlField.setMaxLength(256);
         urlField.setChangedListener((url) -> {
             if (url.equals(getCurrentEdited().url)) return;
             if (url.length() > 255) {
@@ -250,69 +319,71 @@ public abstract class NewBookEditScreenMixin extends Screen {
                 return imageData;
             }));
         });
+
         addButton = addDrawableChild(ButtonWidget.builder(Text.translatable("imaginebook.gui.add"), (b) -> {
             var newImage = new ImageData("", (short) 0, (short) 0, 1, 1);
             addCurrentPageImage(newImage);
-            setCurrentEdited(display_pages.get(currentPage).size()-1);
-        }).position(gap, heightOffset + gap).size(fieldWidth / 2 - gap, elementHeight).build());
+            setCurrentEdited(display_pages.get(currentPage).size() - 1);
+        }).position(addButtonX, addButtonY).size(addButtonWidth, elementHeight).build());
+
         removeButton = addDrawableChild(ButtonWidget.builder(Text.translatable("imaginebook.gui.remove"), (b) -> {
-            mutateImage(currentEdited,(imageData -> {
+            mutateImage(currentEdited, (imageData -> {
                 setCurrentEdited(-1);
                 return new DeletedImageData();
             }));
-        }).position(fieldWidth / 2 + gap + gap, heightOffset + gap).size(fieldWidth / 2 - gap, elementHeight).build());
+        }).position(removeButtonX, removeButtonY).size(removeButtonWidth, elementHeight).build());
 
-        // x position elements
         xPosButton = addDrawableChild(ButtonWidget.builder(Text.literal("⇄"), (b) -> {
-        }).position(gap, heightOffset + 2 * (elementHeight + gap) + gap).size(20, elementHeight).build());
-        xPosField = addDrawableChild(new TextFieldWidget(client.textRenderer, 24 + gap, heightOffset + 2 * (elementHeight + gap) + gap, fieldWidth / 2 - 24 - gap / 2, elementHeight, Text.empty()));
+        }).position(xPosButtonX, xPosButtonY).size(20, elementHeight).build());
+        xPosField = addDrawableChild(new TextFieldWidget(client.textRenderer, xPosFieldX, xPosFieldY, smallFieldWidth, elementHeight, Text.empty()));
         xPosField.setChangedListener(createSetter(x -> {
-            mutateImage(currentEdited,(imageData -> {
+            mutateImage(currentEdited, (imageData -> {
                 imageData.x = x;
                 return imageData;
             }));
         }, xPosField));
 
         yPosButton = addDrawableChild(ButtonWidget.builder(Text.literal("⇅"), (b) -> {
-        }).position(gap, heightOffset + 3 * (elementHeight + gap) + gap).size(20, elementHeight).build());
-        yPosField = addDrawableChild(new TextFieldWidget(client.textRenderer, 24 + gap, heightOffset + 3 * (elementHeight + gap) + gap, fieldWidth / 2 - 24 - gap / 2, elementHeight, Text.empty()));
+        }).position(yPosButtonX, yPosButtonY).size(20, elementHeight).build());
+        yPosField = addDrawableChild(new TextFieldWidget(client.textRenderer, yPosFieldX, yPosFieldY, smallFieldWidth, elementHeight, Text.empty()));
         yPosField.setChangedListener(createSetter(y -> {
-            mutateImage(currentEdited,(imageData -> {
+            mutateImage(currentEdited, (imageData -> {
                 imageData.y = y;
                 return imageData;
             }));
         }, yPosField));
 
         widthButton = addDrawableChild(ButtonWidget.builder(Text.literal("⇔"), (b) -> {
-        }).position(fieldWidth / 2 + gap, heightOffset + 2 * (elementHeight + gap) + gap).size(20, elementHeight).build());
-        widthField = addDrawableChild(new TextFieldWidget(client.textRenderer, fieldWidth / 2 + 24 - gap / 2 + gap, heightOffset + 2 * (elementHeight + gap) + gap, fieldWidth / 2 - 24 - gap / 2, elementHeight, Text.empty()));
+        }).position(widthButtonX, widthButtonY).size(20, elementHeight).build());
+        widthField = addDrawableChild(new TextFieldWidget(client.textRenderer, widthFieldX, widthFieldY, smallFieldWidth, elementHeight, Text.empty()));
         widthField.setChangedListener(createSetter(w -> {
-            mutateImage(currentEdited,(imageData -> {
+            mutateImage(currentEdited, (imageData -> {
                 imageData.width = (w / new ImageRequest(getCurrentEdited().url).getTexture().getRight().getWidth());
                 return imageData;
             }));
         }, widthField));
 
         heightButton = addDrawableChild(ButtonWidget.builder(Text.literal("⇕"), (b) -> {
-        }).position(fieldWidth / 2 + gap, heightOffset + 3 * (elementHeight + gap) + gap).size(20, elementHeight).build());
-        heightField = addDrawableChild(new TextFieldWidget(client.textRenderer, fieldWidth / 2 + 24 - gap / 2 + gap, heightOffset + 3 * (elementHeight + gap) + gap, fieldWidth / 2 - 24 - gap / 2, elementHeight, Text.empty()));
+        }).position(heightButtonX, heightButtonY).size(20, elementHeight).build());
+        heightField = addDrawableChild(new TextFieldWidget(client.textRenderer, heightFieldX, heightFieldY, smallFieldWidth, elementHeight, Text.empty()));
         heightField.setChangedListener(createSetter(h -> {
-            mutateImage(currentEdited,(imageData -> {
+            mutateImage(currentEdited, (imageData -> {
                 imageData.height = (h / new ImageRequest(getCurrentEdited().url).getTexture().getRight().getHeight());
                 return imageData;
             }));
         }, heightField));
 
         spinButton = addDrawableChild(ButtonWidget.builder(Text.literal("↻"), (b) -> {
-        }).position(gap, heightOffset + 4 * (elementHeight + gap) + gap).size(20, elementHeight).build());
-        spinField = addDrawableChild(new TextFieldWidget(client.textRenderer, 24 + gap, heightOffset + 4 * (elementHeight + gap) + gap, fieldWidth - gap - 24, elementHeight, Text.empty()));
+        }).position(spinButtonX, spinButtonY).size(20, elementHeight).build());
+        spinField = addDrawableChild(new TextFieldWidget(client.textRenderer, spinFieldX, spinFieldY, smallFieldWidth, elementHeight, Text.empty()));
         spinField.setChangedListener(createSetter(h -> {
-            mutateImage(currentEdited,(imageData -> {
+            mutateImage(currentEdited, (imageData -> {
                 imageData.rotation = 0;
                 imageData.rotate(h);
                 return imageData;
             }));
         }, spinField));
+
 
 
         removeButton.visible = false;
