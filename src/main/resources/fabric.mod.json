@@ -8,16 +8,16 @@
     "JavaJumper"
   ],
   "contact": {
+    "homepage": "https://modrinth.com/mod/imaginebook",
+    "issues": "https://github.com/jumperonjava/ImagineBook/issues",
+    "sources": "https://github.com/jumperonjava/ImagineBook"
   },
   "license": "LGPLv3",
   "icon": "assets/${id}/icon.png",
   "environment": "*",
   "entrypoints": {
-    "main": [
-      "io.github.jumperonjava.imaginebook.fabric.ImaginebookFabric"
-    ],
     "client": [
-      "io.github.jumperonjava.imaginebook.fabric.client.ImaginebookFabricClient"
+      "io.github.jumperonjava.imaginebook.platform.PlatformEntrypoint"
     ]
   },
   "mixins": [
