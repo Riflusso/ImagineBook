@@ -30,7 +30,7 @@ public final class Imaginebook {
         }
         return link;
     }
-    private static void createImagineBookFolder() {
+    public static void createImagineBookFolder() {
         Path imagineBookPath;
 
         //? if fabric {

@@ -90,7 +90,7 @@ public class ImageRequest {
                     try (InputStream in = new URL(getDownloadLink()).openStream();
                          OutputStream out = Files.newOutputStream(getFile(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 
-                        Files.createDirectories(getFile().getParent());
+                        Imaginebook.createImagineBookFolder();
 
                         byte[] buffer = new byte[8192];
                         byte[] pngHeader = new byte[8];
