@@ -2,6 +2,7 @@ package io.github.jumperonjava.imaginebook;
 
 import net.minecraft.client.texture.NativeImage;
 
+import java.util.Locale;
 import java.util.Objects;
 
 public class ImageData {
@@ -97,7 +98,7 @@ public class ImageData {
     }
 
     public String bookString() {
-        return "[%s,%.2f,%.2f,%.2f,%.2f,%.2f]".formatted(
+        return String.format(Locale.US, "[%s,%.2f,%.2f,%.2f,%.2f,%.2f]",
                 url,
                 x,
                 y,
