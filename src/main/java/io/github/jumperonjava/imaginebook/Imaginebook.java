@@ -4,14 +4,19 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.jumperonjava.imaginebook.util.VersionFunctions;
 import net.minecraft.client.gui.DrawContext;
 import org.joml.Quaternionf;
+
+
+
 /*? if fabric {*/
 import net.fabricmc.loader.api.FabricLoader;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 /*?} elif neoforge {*/
 /*import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 *//*?}*/
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -23,8 +28,10 @@ public final class Imaginebook {
     public static void init() {
         createImagineBookFolder();
     }
+
     public static int LENGTH = 1023;
     public static boolean cancelledFinalize = false;
+
     public static String fixImgurLink(String link) {
         if (link.startsWith("https://imgur.com/")) {
             String imageId = link.substring("https://imgur.com/".length());
@@ -32,6 +39,7 @@ public final class Imaginebook {
         }
         return link;
     }
+
     public static void createImagineBookFolder() {
         Path imagineBookPath;
 
@@ -39,7 +47,7 @@ public final class Imaginebook {
         imagineBookPath = FabricLoader.getInstance().getGameDir().resolve("imaginebook");
         //?} elif neoforge {
         /*imagineBookPath = FMLPaths.GAMEDIR.get().resolve("imaginebook");
-        *///?}
+         *///?}
 
         try {
             if (!Files.exists(imagineBookPath)) {
@@ -65,11 +73,11 @@ public final class Imaginebook {
                 0);
 
 
-        context.getMatrices().translate(w/2,h/2,0);
+        context.getMatrices().translate(w / 2, h / 2, 0);
         context.getMatrices().multiply(new Quaternionf().rotateZ((float) Math.toRadians(imageData.rotation)));
-        context.getMatrices().translate(-w/2,-h/2,0);
+        context.getMatrices().translate(-w / 2, -h / 2, 0);
 
-        VersionFunctions.drawTexture(context,image.getTexture().getLeft(),
+        VersionFunctions.drawTexture(context, image.getTexture().getLeft(),
                 0,
                 0,
                 (float) 0,
