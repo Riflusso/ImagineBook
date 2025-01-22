@@ -5,7 +5,6 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
@@ -68,8 +67,19 @@ public class ImageRequest {
         return this.link;
     }
 
-    public Image getTexture() {
+    public static boolean isValidUrl(String url)
+    {
+        try {
+            new URL(url).toURI();
+            return true;
+        }
 
+        catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Image getTexture() {
         var info = TextureMap.containsKey(hashCode()) ? TextureMap.get(hashCode()) : new TextureRequestInfo();
         switch (info.status)
         {
@@ -85,10 +95,16 @@ public class ImageRequest {
                 new Thread(() -> {
                     currentDownloads++;
                     info.status = TextureRequestInfo.DownloadStatus.DOWNLOADING;
-                    LoggerFactory.getLogger("ImagineBook").info(String.format("Downloading %s",link));
+                    Imaginebook.LOGGER.info(String.format("Downloading %s",link));
 
+                    if(!isValidUrl(getDownloadLink()))
+                    {
+                        info.status = TextureRequestInfo.DownloadStatus.DOWNLOADING;
+                        Imaginebook.LOGGER.error(String.format("Invalid url (%s)",link));
+                        return;
+                    }
                     try (InputStream in = new URL(getDownloadLink()).openStream();
-                         OutputStream out = Files.newOutputStream(getFile(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+                        OutputStream out = Files.newOutputStream(getFile(), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 
                         Imaginebook.createImagineBookFolder();
 
@@ -104,7 +120,7 @@ public class ImageRequest {
                         }
                         out.write(pngHeader);
                         totalBytesRead += pngHeader.length;
-                        LoggerFactory.getLogger("ImagineBook").info(String.format("Download size %d", totalBytesRead));
+                        Imaginebook.LOGGER.info(String.format("Download size %d", totalBytesRead));
 
                         while ((bytesRead = in.read(buffer)) != -1) {
                             totalBytesRead += bytesRead;
@@ -121,11 +137,10 @@ public class ImageRequest {
                     catch (InvalidFormatException e){
                         TextureMap.put(hashCode(), info);
                         info.status = TextureRequestInfo.DownloadStatus.CUSTOM_ERROR;
-                        e.printStackTrace();
                         try {
                             Files.deleteIfExists(getFile());
                         } catch (IOException deleteException) {
-                            System.err.println("Failed to clean up incomplete file: " + getFile());
+                            Imaginebook.LOGGER.error("Failed to clean up incomplete file: " + getFile());
                             deleteException.printStackTrace();
                         }
                         currentDownloads--;
@@ -138,7 +153,7 @@ public class ImageRequest {
                         try {
                             Files.deleteIfExists(getFile());
                         } catch (IOException deleteException) {
-                            System.err.println("Failed to clean up incomplete file: " + getFile());
+                            Imaginebook.LOGGER.error("Failed to clean up incomplete file: " + getFile());
                             deleteException.printStackTrace();
                         }
                     }

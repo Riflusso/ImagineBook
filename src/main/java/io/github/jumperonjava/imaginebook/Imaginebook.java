@@ -6,6 +6,8 @@ import net.minecraft.client.gui.DrawContext;
 import org.joml.Quaternionf;
 /*? if fabric {*/
 import net.fabricmc.loader.api.FabricLoader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /*?} elif neoforge {*/
 /*import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
@@ -42,12 +44,12 @@ public final class Imaginebook {
         try {
             if (!Files.exists(imagineBookPath)) {
                 Files.createDirectories(imagineBookPath);
-                System.out.println("imaginebook folder created at: " + imagineBookPath.toString());
+                LOGGER.info("imaginebook folder created at: " + imagineBookPath.toString());
             } else {
-                System.out.println("imaginebook folder already exists at: " + imagineBookPath.toString());
+                //LOGGER.info("imaginebook folder already exists at: " + imagineBookPath.toString());
             }
         } catch (IOException e) {
-            System.err.println("Failed to create imaginebook folder: " + e.getMessage());
+            LOGGER.info("Failed to create imaginebook folder: " + e.getMessage());
         }
     }
 
@@ -82,4 +84,6 @@ public final class Imaginebook {
         RenderSystem.enableCull();
 
     }
+
+    public static Logger LOGGER = LoggerFactory.getLogger("ImagineBook");
 }
