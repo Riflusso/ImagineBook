@@ -4,13 +4,22 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.jumperonjava.imaginebook.util.VersionFunctions;
 import net.minecraft.client.gui.DrawContext;
 import org.joml.Quaternionf;
+/*? if fabric {*/
+import net.fabricmc.loader.api.FabricLoader;
+/*?} elif neoforge {*/
+/*import net.neoforged.fml.ModList;
+import net.neoforged.fml.loading.FMLPaths;
+*//*?}*/
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 public final class Imaginebook {
     public static final String MOD_ID = "imaginebook";
     public static final String TEST_BALLER = "https://i.kym-cdn.com/photos/images/original/002/461/188/20d.png";
 
     public static void init() {
-
+        createImagineBookFolder();
     }
     public static int LENGTH = 1023;
     public static boolean cancelledFinalize = false;
@@ -21,6 +30,27 @@ public final class Imaginebook {
         }
         return link;
     }
+    private static void createImagineBookFolder() {
+        Path imagineBookPath;
+
+        //? if fabric {
+        imagineBookPath = FabricLoader.getInstance().getGameDir().resolve("imaginebook");
+        //?} elif neoforge {
+        /*imagineBookPath = FMLPaths.GAMEDIR.get().resolve("imaginebook");
+        *///?}
+
+        try {
+            if (!Files.exists(imagineBookPath)) {
+                Files.createDirectories(imagineBookPath);
+                System.out.println("imaginebook folder created at: " + imagineBookPath.toString());
+            } else {
+                System.out.println("imaginebook folder already exists at: " + imagineBookPath.toString());
+            }
+        } catch (IOException e) {
+            System.err.println("Failed to create imaginebook folder: " + e.getMessage());
+        }
+    }
+
 
     public static void renderImage(DrawContext context, int bookX, int bookY, ImageData imageData, ImageRequest image, Image.ImageSize nativeImage) {
         var w = imageData.width(nativeImage);

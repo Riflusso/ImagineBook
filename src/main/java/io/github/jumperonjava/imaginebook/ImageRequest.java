@@ -17,8 +17,8 @@ import java.util.HashMap;
 
 /*? if fabric {*/
 import net.fabricmc.loader.api.FabricLoader;
-/*?} elif neoforge {*//*
-import net.neoforged.fml.ModList;
+/*?} elif neoforge {*/
+/*import net.neoforged.fml.ModList;
 import net.neoforged.fml.loading.FMLPaths;
 *//*?}*/
 
@@ -51,8 +51,8 @@ public class ImageRequest {
     private Path getFile() {
         /*? if fabric {*/
         return FabricLoader.getInstance().getGameDir().resolve("imaginebook").resolve(getIdentifierString());
-        /*?} elif neoforge {*//*
-        return FMLPaths.GAMEDIR.get().resolve("imaginebook").resolve(getIdentifierString());
+        /*?} elif neoforge {*/
+        /*return FMLPaths.GAMEDIR.get().resolve("imaginebook").resolve(getIdentifierString());
         *//*?}*/
     }
 

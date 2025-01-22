@@ -51,8 +51,8 @@ import static io.github.jumperonjava.imaginebook.ImageData.isMouseOverImage;
 
 /*? if fabric {*/
 import net.fabricmc.loader.api.FabricLoader;
-/*?} elif neoforge {*//*
-import net.neoforged.fml.ModList;
+/*?} elif neoforge {*/
+/*import net.neoforged.fml.ModList;
 *//*?}*/
 
 @Mixin(BookEditScreen.class)
@@ -227,17 +227,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
         int columnSize =  100 - gap;
         int smallFieldWidth = columnSize - 24;
 
-        /*? if fabric {*/
-        //if (FabricLoader.getInstance().isModLoaded("stendhal")) {
-        //    heightOffset = 140;
-        //    availableHeight = height - heightOffset;
-        //}
-        /*?} elif neoforge {*//*
-        //if (ModList.get().isLoaded("stendhal")) {
-        //    heightOffset = 140;
-        //    availableHeight = height - heightOffset;
-        //}
-        *//*?}*/
+
 
         int[] row = new int[10];
         int[] column = new int[10];

@@ -10,8 +10,8 @@ public final class PlatformEntrypoint implements ClientModInitializer {
         Imaginebook.init();
     }
 }
-/*?} elif neoforge {*//*
-import net.neoforged.api.distmarker.Dist;
+/*?} elif neoforge {*/
+/*import net.neoforged.api.distmarker.Dist;
 import net.neoforged.fml.common.Mod;
 
 @Mod(value = Imaginebook.MOD_ID, dist = Dist.CLIENT)
