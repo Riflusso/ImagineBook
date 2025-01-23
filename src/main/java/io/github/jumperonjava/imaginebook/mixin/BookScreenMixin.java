@@ -11,6 +11,7 @@ import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookScreen;
 import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.MathHelper;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -37,6 +38,9 @@ public class BookScreenMixin extends Screen {
 
     @Inject(method = "<init>(Lnet/minecraft/client/gui/screen/ingame/BookScreen$Contents;Z)V", at = @At("TAIL"))
     void construct(BookScreen.Contents contents, boolean playPageTurnSound, CallbackInfo ci) {
+        for(int i=0;i<255;i++){
+            imaginebook_pages.add(new ArrayList<>());
+        }
         parseImages(contents);
     }
 
@@ -48,20 +52,18 @@ public class BookScreenMixin extends Screen {
 
     void parseImages(BookScreen.Contents contents){
 
-        for(int i=0;i<255;i++){
-            imaginebook_pages.add(new ArrayList<>());
-        }
+
 
         //? if >= 1.21.1
-        /*var pages = contents.pages();*/
+        var pages = contents.pages();
 
         //? if >= 1.21.1 {
-        /*for (int i = 0; i < pages.size(); i++) {
+        for (int i = 0; i < pages.size(); i++) {
             var page = pages.get(i).getString();
-        *///?} else {
-        for (int i = 0; i < contents.getPageCount(); i++) {
+        //?} else {
+        /*for (int i = 0; i < contents.getPageCount(); i++) {
             var page = contents.getPage(i).getString();
-        //?}
+        *///?}
 
 
             if (page.length() == Imaginebook.LENGTH) {
@@ -89,6 +91,11 @@ public class BookScreenMixin extends Screen {
         int bookX = this.width / 2 - 96;
         int bookY = 2;
 
+        Imaginebook.LOGGER.info("pageIndex: " + pageIndex);
+
+        if(pageIndex==-1){
+            return;
+        }
         var images = imaginebook_pages.get(pageIndex);
         if (images == null) return;
         for (ImageData image : images.reversed()) {

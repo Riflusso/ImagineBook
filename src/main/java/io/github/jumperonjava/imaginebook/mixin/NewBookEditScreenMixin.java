@@ -12,7 +12,6 @@ import net.minecraft.client.gui.navigation.GuiNavigationPath;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.ingame.BookEditScreen;
 import net.minecraft.client.gui.widget.ButtonWidget;
-import net.minecraft.client.gui.widget.ClickableWidget;
 import net.minecraft.client.gui.widget.PageTurnWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.client.resource.language.I18n;
@@ -20,7 +19,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.Rect2i;
 //? if >= 1.21.3
-/*import net.minecraft.component.type.WritableBookContentComponent;*/
+import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
@@ -116,10 +115,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     //? if >= 1.21.3 {
-    /*void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
-    *///?} else {
-    void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
-    //?}
+    void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
+    //?} else {
+    /*void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
+    *///?}
         for (int i = 0; i < 250; i++) {
             display_pages.add(new ArrayList<>());
             //imaginebook_safe_pages.add(new ArrayList<>());
@@ -293,7 +292,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
         urlField = addDrawableChild(new TextFieldWidget(client.textRenderer, urlFieldX, urlFieldY, urlFieldWidth, elementHeight, Text.translatable("imaginebook.gui.urlhere")));
         urlField.setMaxLength(256);
         urlField.setChangedListener((url) -> {
-            if (url.equals(getCurrentEdited().url)) return;
+            if (url.equals(getCurrentEdited().getUrl())) return;
             if (url.length() > 255) {
                 urlField.setText(I18n.translate("imaginebook.error.too_long"));
                 return;
@@ -301,7 +300,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
             mutateImage(currentEdited, (imageData -> {
                 imageData.heightFraction = 1;
                 imageData.widthFraction = 1;
-                imageData.url = Imaginebook.fixImgurLink(url);
+                imageData.setUrl(Imaginebook.fixImgurLink(url));
                 return imageData;
             }));
         });
@@ -344,7 +343,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
         widthField = addDrawableChild(new TextFieldWidget(client.textRenderer, widthFieldX, widthFieldY, smallFieldWidth, elementHeight, Text.empty()));
         widthField.setChangedListener(createSetter(w -> {
             mutateImage(currentEdited, (imageData -> {
-                imageData.widthFraction = Math.round(w) /100;
+                imageData.widthFraction = (float) Math.round(w) /100;
                 return imageData;
             }));
         }, widthField));
@@ -354,7 +353,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
         heightField = addDrawableChild(new TextFieldWidget(client.textRenderer, heightFieldX, heightFieldY, smallFieldWidth, elementHeight, Text.empty()));
         heightField.setChangedListener(createSetter(h -> {
             mutateImage(currentEdited, (imageData -> {
-                imageData.heightFraction = Math.round(h) /100;
+                imageData.heightFraction = (float) Math.round(h) /100;
                 return imageData;
             }));
         }, heightField));
@@ -421,7 +420,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
 
 
-        urlField.setText(getCurrentEdited().url);
+        urlField.setText(getCurrentEdited().getUrl());
 
         String xpos = String.valueOf((int) getCurrentEdited().x());
         xPosField.setText(xpos);
@@ -558,10 +557,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     @Override
     //? if < 1.20.4 {
-    public boolean mouseScrolled(double mouseX, double mouseY, double verticalAmount) {
-    //?} else {
-    /*public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-    *///?}
+    /*public boolean mouseScrolled(double mouseX, double mouseY, double verticalAmount) {
+    *///?} else {
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+    //?}
         if (!signing) {
             verticalAmount = Math.signum(verticalAmount);
             if (hasControlDown()) {
@@ -673,10 +672,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
             }
         }
         //? if < 1.20.4 {
-        return super.mouseScrolled(mouseX, mouseY, verticalAmount);
-        //?} else {
-        /*return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
-        *///?}
+        /*return super.mouseScrolled(mouseX, mouseY, verticalAmount);
+        *///?} else {
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        //?}
     }
 
     Text lengthLeft;
@@ -716,7 +715,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
         if (signing) {
             return;
         }
-
+        Imaginebook.LOGGER.info(currentPage + " ");
         int bookX = this.width / 2 - 96;
         int bookY = 2;
 

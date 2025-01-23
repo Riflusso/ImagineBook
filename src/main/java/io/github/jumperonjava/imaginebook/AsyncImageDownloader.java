@@ -6,6 +6,7 @@ import net.minecraft.client.texture.NativeImage;
 import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
 import org.apache.commons.io.IOUtils;
+import org.slf4j.LoggerFactory;
 
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
@@ -28,11 +29,11 @@ public class AsyncImageDownloader {
     public static Image URL_INVALID_ERROR = new Image(Identifier.of("imaginebook", "textures/url_invalid.png"), new Image.ImageSize(128, 128));
 
     public Map<URL, Image> downloadedImages = new HashMap<>();
-    public List<URL> inProgressImages = new LinkedList<>();
-    public List<URL> inProgressRetryImages = new LinkedList<>();
-    public List<URL> unregisteredImages = new LinkedList<>();
-    public List<URL> errorImages = new LinkedList<>();
-    public List<URL> overLimitImages = new LinkedList<>();
+    public List<URL> inProgressImages = Collections.synchronizedList(new LinkedList<>());
+    public List<URL> inProgressRetryImages = Collections.synchronizedList(new LinkedList<>());
+    public List<URL> unregisteredImages = Collections.synchronizedList(new LinkedList<>());
+    public List<URL> errorImages = Collections.synchronizedList( new LinkedList<>());
+    public List<URL> overLimitImages = Collections.synchronizedList(new LinkedList<>());
 
     public AsyncImageDownloader() {
         new Thread(this::downloadThread).start();
@@ -104,6 +105,7 @@ public class AsyncImageDownloader {
                     }
                 }
             } catch (Exception e) {
+                errorImages.add(downloadUrl);
                 Imaginebook.LOGGER.error("Uncaught exception while downloading: ", e);
                 e.printStackTrace();
             }
@@ -138,9 +140,17 @@ public class AsyncImageDownloader {
         }
 
         if (unregisteredImages.contains(url)) {
-            var image = registerTexture(urlPath(url).toFile(), urlIdentifier(url));
-            downloadedImages.put(url, image);
-            unregisteredImages.remove(url);
+            Image image = null;
+            try {
+                image = registerTexture(new FileInputStream(urlPath(url).toFile()), urlIdentifier(url));
+                downloadedImages.put(url, image);
+                unregisteredImages.remove(url);
+            } catch (FileNotFoundException e) {
+                errorImages.add(url);
+                return ERROR_IMAGE;
+            }
+
+
             return image;
         }
 
@@ -149,21 +159,20 @@ public class AsyncImageDownloader {
         return DOWNLOADING_IMAGE;
     }
 
-    public static Image registerTexture(File texture, Identifier identifier) {
+    public static Image registerTexture(InputStream texture, Identifier identifier) {
         NativeImage nativeImage = toNativeImage(texture);
         var backedTestTexture = new NativeImageBackedTexture(nativeImage);
         MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, backedTestTexture);
         return new Image(identifier, new Image.ImageSize(nativeImage.getWidth(), nativeImage.getHeight()));
     }
 
-    public static NativeImage toNativeImage(File file) {
+    public static NativeImage toNativeImage(InputStream file) {
         try {
-            InputStream inputStream = new FileInputStream(file);
-            NativeImage nativeImage = NativeImage.read(inputStream);
-            inputStream.close();
+            NativeImage nativeImage = NativeImage.read((file));
+            (file).close();
             return nativeImage;
         } catch (Exception e) {
-            throw new RuntimeException(String.format("problem registring %s", file.toPath().toString()));
+            throw new RuntimeException(String.format("problem registring texture"));
         }
     }
 

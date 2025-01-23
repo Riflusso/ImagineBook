@@ -16,7 +16,7 @@ public class ImageSerializer {
         buf.putShort((short) (2 + 2 + 4 + 4 + 2)); //Format (size)
         buf.put((byte) imagesDefinition.size());
         for (var image : imagesDefinition) {
-            var url = image.url.getBytes(StandardCharsets.UTF_8);
+            var url = image.getUrl().getBytes(StandardCharsets.UTF_8);
             buf.put((byte) url.length);
             buf.put(url, 0, url.length);
             //count from here
@@ -48,7 +48,7 @@ public class ImageSerializer {
             var urlsize = buf.get() & 0xFF;
             var urlbytes = new byte[urlsize];
             buf.get(urlbytes);
-            image.url = new String(urlbytes, StandardCharsets.UTF_8);
+            image.setUrl(new String(urlbytes, StandardCharsets.UTF_8));
             var usedBytes = 0;
             //count from here
             image.x = buf.getShort();
@@ -87,9 +87,17 @@ public class ImageSerializer {
                         .replace("[", "")
                         .replace("]", "")
                         .split("[,]")).toArray(String[]::new);
-                data.url = elements[0];
+                data.setUrl(elements[0]);
 
 
+                if(!str.contains(":") || !str.contains(","))
+                    continue;
+
+                if(!Imaginebook.resolverExists(data.getUrl().split(":",2)[0]))
+                    continue;
+
+
+                images.add(data);
                 var numbers = Arrays.stream(elements)
                         .skip(1)
                         .flatMap(element -> Arrays.stream(element.split(",")))
@@ -116,7 +124,6 @@ public class ImageSerializer {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            images.add(data);
         }
         return images;
     }

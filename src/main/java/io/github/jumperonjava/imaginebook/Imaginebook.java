@@ -13,6 +13,7 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.neoforged.fml.loading.FMLPaths;
 *//*?}*/
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,6 +66,10 @@ public final class Imaginebook {
         if(resolvers.containsKey(type))
             return resolvers.get(type);
         return path -> AsyncImageDownloader.ERROR_IMAGE;
+    }
+
+    public static boolean resolverExists(String resolver) {
+        return resolvers.containsKey(resolver);
     }
 
     public void cleanFiles(){

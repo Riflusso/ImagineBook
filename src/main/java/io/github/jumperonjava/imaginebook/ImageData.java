@@ -10,7 +10,7 @@ import java.util.Objects;
 
 
 public class ImageData {
-    public String url;
+    private String url;
     public float x;
     public float y;
     public float widthFraction = 1;
@@ -18,7 +18,7 @@ public class ImageData {
     public float rotation;
 
     public ImageData(String url, short x, short y, float widthFraction, float heightFraction) {
-        this.url = url;
+        this.setUrl(url);
         this.x = x;
         this.y = y;
         this.widthFraction = widthFraction;
@@ -26,7 +26,7 @@ public class ImageData {
     }
 
     public ImageData(ImageData image) {
-        this.url = image.url;
+        this.setUrl(image.getUrl());
         this.x = image.x;
         this.y = image.y;
         this.widthFraction = image.widthFraction;
@@ -92,16 +92,15 @@ public class ImageData {
 
     public Image getImage() {
         try{
-            var split = this.url.split(":",2);
+            var split = this.getUrl().split(":",2);
             return Imaginebook.getResolver(split[0]).resolve(split[1]);
         }catch(Exception e){
-
             return AsyncImageDownloader.ERROR_IMAGE;
         }
     }
 
     public String url() {
-        return url;
+        return getUrl();
     }
 
     public float x() {
@@ -132,7 +131,7 @@ public class ImageData {
         if (obj == this) return true;
         if (obj == null || obj.getClass() != this.getClass()) return false;
         var that = (ImageData) obj;
-        return Objects.equals(this.url, that.url) &&
+        return Objects.equals(this.getUrl(), that.getUrl()) &&
                 this.x == that.x &&
                 this.y == that.y &&
                 this.widthFraction == that.widthFraction &&
@@ -141,13 +140,13 @@ public class ImageData {
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, x, y, widthFraction, heightFraction);
+        return Objects.hash(getUrl(), x, y, widthFraction, heightFraction);
     }
 
     @Override
     public String toString() {
         return "ImageDefinition[" +
-                "url=" + url + ", " +
+                "url=" + getUrl() + ", " +
                 "x=" + x + ", " +
                 "y=" + y + ", " +
                 "width=" + widthFraction + ", " +
@@ -156,7 +155,7 @@ public class ImageData {
 
     public String bookString() {
         return String.format(Locale.US, "[%s,%.2f,%.2f,%.2f,%.2f,%.2f]",
-                url,
+                getUrl(),
                 x,
                 y,
                 widthFraction * 100,
@@ -171,4 +170,11 @@ public class ImageData {
         this.rotation = Math.floorMod((int) rotation, 360);
     }
 
+    public String getUrl() {
+        return url;
+    }
+
+    public void setUrl(String url) {
+        this.url = url.replace(",","");
+    }
 }
