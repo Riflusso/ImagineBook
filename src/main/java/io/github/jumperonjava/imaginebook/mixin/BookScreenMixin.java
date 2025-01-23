@@ -92,11 +92,9 @@ public class BookScreenMixin extends Screen {
         var images = imaginebook_pages.get(pageIndex);
         if (images == null) return;
         for (ImageData image : images.reversed()) {
-            var req = new ImageRequest(image.url());
-            Image.ImageSize nativeImage = req.getTexture().getRight();
             RenderSystem.disableCull();
             RenderSystem.enableBlend();
-            Imaginebook.renderImage(context, bookX, bookY, image, req, nativeImage);
+            image.renderImage(context, bookX, bookY);
         }
         previousPageButton.render(context, mouseX, mouseY, delta);
         nextPageButton.render(context, mouseX, mouseY, delta);

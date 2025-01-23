@@ -22,8 +22,8 @@ public class ImageSerializer {
             //count from here
             buf.putShort((short) image.x);
             buf.putShort((short) image.y);
-            buf.putFloat(image.width);
-            buf.putFloat(image.height);
+            buf.putFloat(image.widthFraction);
+            buf.putFloat(image.heightFraction);
             buf.putShort((short) ((image.rotation - 180) / 180 * Short.MAX_VALUE));
         }
         var len = buf.position();
@@ -55,9 +55,9 @@ public class ImageSerializer {
             usedBytes += 2;
             image.y = buf.getShort();
             usedBytes += 2;
-            image.width = buf.getFloat();
+            image.widthFraction = buf.getFloat();
             usedBytes += 4;
-            image.height = buf.getFloat();
+            image.heightFraction = buf.getFloat();
             usedBytes += 4;
             image.rotation = ((float) buf.getShort()) / Short.MAX_VALUE * 180 + 180;
             usedBytes += 2;
@@ -100,16 +100,16 @@ public class ImageSerializer {
                     data.y = Float.parseFloat(numbers[1]);
                 }
                 if (numbers.length == 3) {
-                    data.width = Float.parseFloat(numbers[2])/ 100;
-                    data.height = Float.parseFloat(numbers[2])/ 100;
+                    data.widthFraction = Float.parseFloat(numbers[2])/ 100;
+                    data.heightFraction = Float.parseFloat(numbers[2])/ 100;
                 }
                 if (numbers.length == 4) {
-                    data.width = Float.parseFloat(numbers[2]) / 100;
-                    data.height = Float.parseFloat(numbers[3]) / 100;
+                    data.widthFraction = Float.parseFloat(numbers[2]) / 100;
+                    data.heightFraction = Float.parseFloat(numbers[3]) / 100;
                 }
                 if (numbers.length == 5) {
-                    data.width = Float.parseFloat(numbers[2]) / 100;
-                    data.height = Float.parseFloat(numbers[3]) / 100;
+                    data.widthFraction = Float.parseFloat(numbers[2]) / 100;
+                    data.heightFraction = Float.parseFloat(numbers[3]) / 100;
                     data.rotation = Float.parseFloat(numbers[4]);
                 }
 

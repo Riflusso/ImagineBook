@@ -1,46 +1,53 @@
 package io.github.jumperonjava.imaginebook;
 
-import net.minecraft.client.texture.NativeImage;
+import com.mojang.blaze3d.systems.RenderSystem;
+import io.github.jumperonjava.imaginebook.util.VersionFunctions;
+import net.minecraft.client.gui.DrawContext;
+import org.joml.Quaternionf;
 
 import java.util.Locale;
 import java.util.Objects;
+
 
 public class ImageData {
     public String url;
     public float x;
     public float y;
-    public float width=1;
-    public float height=1;
+    public float widthFraction = 1;
+    public float heightFraction = 1;
     public float rotation;
 
-    public ImageData(String url, short x, short y, float width, float height) {
+    public ImageData(String url, short x, short y, float widthFraction, float heightFraction) {
         this.url = url;
         this.x = x;
         this.y = y;
-        this.width = width;
-        this.height = height;
+        this.widthFraction = widthFraction;
+        this.heightFraction = heightFraction;
     }
+
     public ImageData(ImageData image) {
         this.url = image.url;
         this.x = image.x;
         this.y = image.y;
-        this.width = image.width;
-        this.height = image.height;
+        this.widthFraction = image.widthFraction;
+        this.heightFraction = image.heightFraction;
         this.rotation = image.rotation;
     }
-    public ImageData() {}
+
+    public ImageData() {
+                
+    }
 
     public static boolean isMouseOverImage(ImageData imageData, double mouseX, double mouseY, int i) {
         int bookX = i - 96;
         int bookY = 2;
 
-        var image = new ImageRequest(imageData.url);
-        Image.ImageSize nativeImage = image.getTexture().getRight();
+        var image = imageData.getImage();
 
         double imageX1 = imageData.x() + bookX;
         double imageY1 = imageData.y() + bookY;
-        double imageX2 = imageX1 + imageData.width(nativeImage);
-        double imageY2 = imageY1 + imageData.height(nativeImage);
+        double imageX2 = imageX1 + imageData.renderWidth();
+        double imageY2 = imageY1 + imageData.renderHeight();
 
         double minX = Math.min(imageX1, imageX2);
         double maxX = Math.max(imageX1, imageX2);
@@ -48,6 +55,49 @@ public class ImageData {
         double maxY = Math.max(imageY1, imageY2);
 
         return mouseX >= minX && mouseX < maxX && mouseY >= minY && mouseY < maxY;
+    }
+
+    public void renderImage(DrawContext context, int bookX, int bookY) {
+        var image = getImage();
+        var size = image.getSize();
+        var w = renderWidth();
+        var h = renderHeight();
+        context.getMatrices().push();
+
+        context.getMatrices().translate(
+                bookX + x(),
+                bookY + y(),
+                0);
+
+
+        context.getMatrices().translate(w / 2, h / 2, 0);
+        context.getMatrices().multiply(new Quaternionf().rotateZ((float) Math.toRadians(rotation)));
+        context.getMatrices().translate(-w / 2, -h / 2, 0);
+
+        VersionFunctions.drawTexture(context, image.getIdentifier(),
+                0,
+                0,
+                (float) 0,
+                (float) 0,
+                (int) renderWidth(),
+                (int) renderHeight(),
+                (int) renderWidth(),
+                (int) renderHeight()
+        );
+        context.getMatrices().pop();
+        RenderSystem.disableBlend();
+        RenderSystem.enableCull();
+
+    }
+
+    public Image getImage() {
+        try{
+            var split = this.url.split(":",2);
+            return Imaginebook.getResolver(split[0]).resolve(split[1]);
+        }catch(Exception e){
+
+            return AsyncImageDownloader.ERROR_IMAGE;
+        }
     }
 
     public String url() {
@@ -62,12 +112,19 @@ public class ImageData {
         return y;
     }
 
-    public float width(Image.ImageSize nativeImage) {
-        return width*nativeImage.getWidth();
+    public float widthFraction() {
+        return widthFraction;
     }
 
-    public float height(Image.ImageSize nativeImage) {
-        return height*nativeImage.getHeight();
+    public float heightFraction() {
+        return heightFraction;
+    }
+    public float renderWidth() {
+        return widthFraction * (float) getImage().getSize().getWidth();
+    }
+
+    public float renderHeight() {
+        return heightFraction * (float) getImage().getSize().getHeight();
     }
 
     @Override
@@ -78,13 +135,13 @@ public class ImageData {
         return Objects.equals(this.url, that.url) &&
                 this.x == that.x &&
                 this.y == that.y &&
-                this.width == that.width &&
-                this.height == that.height;
+                this.widthFraction == that.widthFraction &&
+                this.heightFraction == that.heightFraction;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(url, x, y, width, height);
+        return Objects.hash(url, x, y, widthFraction, heightFraction);
     }
 
     @Override
@@ -93,8 +150,8 @@ public class ImageData {
                 "url=" + url + ", " +
                 "x=" + x + ", " +
                 "y=" + y + ", " +
-                "width=" + width + ", " +
-                "height=" + height + ']';
+                "width=" + widthFraction + ", " +
+                "height=" + heightFraction + ']';
     }
 
     public String bookString() {
@@ -102,8 +159,8 @@ public class ImageData {
                 url,
                 x,
                 y,
-                width * 100,
-                height * 100,
+                widthFraction * 100,
+                heightFraction * 100,
                 rotation
         ).replaceAll("\\.00(?!\\d)", "").replaceAll("(\\.\\d)0(?!\\d)", "$1");
     }
@@ -111,6 +168,7 @@ public class ImageData {
 
     public void rotate(float degrees) {
         this.rotation += degrees;
-        this.rotation = Math.floorMod((int) rotation,360);
+        this.rotation = Math.floorMod((int) rotation, 360);
     }
+
 }

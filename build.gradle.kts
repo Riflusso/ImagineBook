@@ -22,8 +22,8 @@ architectury.common(stonecutter.tree.branches.mapNotNull {
     else it.prop("loom.platform")
 })
 repositories{
+    maven("https://repo1.maven.org/maven2/");
     maven("https://maven.neoforged.net/releases/")
-
     //modmenu
     maven("https://maven.terraformersmc.com/")
     //placeholder api (modmenu depencency)
@@ -31,6 +31,11 @@ repositories{
 }
 dependencies {
     minecraft("com.mojang:minecraft:$minecraft")
+
+    "org.sejda.imageio:webp-imageio:0.1.6".let{
+        implementation(it)
+        include(it)
+    }
 
     if (loader == "fabric") {
         modImplementation("net.fabricmc:fabric-loader:${mod.dep("fabric_loader")}")
@@ -41,6 +46,9 @@ dependencies {
         //for example translations from assets/modid/lang/en_us.json won't be working, same stuff with textures
         //but we keep runtime only to not accidentally depend on fabric's api, because it doesn't exist in neo/forge
         modRuntimeOnly("net.fabricmc.fabric-api:fabric-api:${mod.dep("fabric_version")}")
+
+        //if this is here if forgot to remove it
+        modCompileOnly("net.fabricmc.fabric-api:fabric-api:${mod.dep("fabric_version")}")
 
     }
     if (loader == "forge") {

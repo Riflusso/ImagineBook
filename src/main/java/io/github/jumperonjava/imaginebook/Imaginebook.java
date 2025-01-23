@@ -1,9 +1,8 @@
 package io.github.jumperonjava.imaginebook;
 
-import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.jumperonjava.imaginebook.util.VersionFunctions;
-import net.minecraft.client.gui.DrawContext;
-import org.joml.Quaternionf;
+import io.github.jumperonjava.imaginebook.resolvers.Resolver;
+import io.github.jumperonjava.imaginebook.resolvers.TextureResolver;
+import io.github.jumperonjava.imaginebook.resolvers.UrlResolver;
 
 
 
@@ -20,17 +19,23 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Map;
 
 public final class Imaginebook {
     public static final String MOD_ID = "imaginebook";
+    public static Logger LOGGER = LoggerFactory.getLogger("ImagineBook");
     public static final String TEST_BALLER = "https://i.kym-cdn.com/photos/images/original/002/461/188/20d.png";
 
     public static void init() {
         createImagineBookFolder();
+
     }
+
 
     public static int LENGTH = 1023;
     public static boolean cancelledFinalize = false;
+
 
     public static String fixImgurLink(String link) {
         if (link.startsWith("https://imgur.com/")) {
@@ -40,14 +45,34 @@ public final class Imaginebook {
         return link;
     }
 
-    public static void createImagineBookFolder() {
-        Path imagineBookPath;
-
+    public static Path getCachePath(){
         //? if fabric {
-        imagineBookPath = FabricLoader.getInstance().getGameDir().resolve("imaginebook");
+        return FabricLoader.getInstance().getGameDir().resolve("imaginebook");
         //?} elif neoforge {
-        /*imagineBookPath = FMLPaths.GAMEDIR.get().resolve("imaginebook");
+        /*return FMLPaths.GAMEDIR.get().resolve("imaginebook");
          *///?}
+    }
+
+    private static Map<String,Resolver> resolvers = new HashMap<>(Map.of(
+            "http",UrlResolver.INSTANCE,
+            "https",UrlResolver.INSTANCE_S,
+            "res", TextureResolver.INSTANCE
+    ));
+    public static void addResolver(String id, Resolver resolver) {
+        resolvers.put(id, resolver);
+    }
+    public static Resolver getResolver(String type) {
+        if(resolvers.containsKey(type))
+            return resolvers.get(type);
+        return path -> AsyncImageDownloader.ERROR_IMAGE;
+    }
+
+    public void cleanFiles(){
+
+    }
+
+    public static void createImagineBookFolder() {
+        Path imagineBookPath = getCachePath();
 
         try {
             if (!Files.exists(imagineBookPath)) {
@@ -62,36 +87,4 @@ public final class Imaginebook {
     }
 
 
-    public static void renderImage(DrawContext context, int bookX, int bookY, ImageData imageData, ImageRequest image, Image.ImageSize nativeImage) {
-        var w = imageData.width(nativeImage);
-        var h = imageData.height(nativeImage);
-        context.getMatrices().push();
-
-        context.getMatrices().translate(
-                bookX + imageData.x(),
-                bookY + imageData.y(),
-                0);
-
-
-        context.getMatrices().translate(w / 2, h / 2, 0);
-        context.getMatrices().multiply(new Quaternionf().rotateZ((float) Math.toRadians(imageData.rotation)));
-        context.getMatrices().translate(-w / 2, -h / 2, 0);
-
-        VersionFunctions.drawTexture(context, image.getTexture().getLeft(),
-                0,
-                0,
-                (float) 0,
-                (float) 0,
-                (int) imageData.width(nativeImage),
-                (int) imageData.height(nativeImage),
-                (int) imageData.width(nativeImage),
-                (int) imageData.height(nativeImage)
-        );
-        context.getMatrices().pop();
-        RenderSystem.disableBlend();
-        RenderSystem.enableCull();
-
-    }
-
-    public static Logger LOGGER = LoggerFactory.getLogger("ImagineBook");
 }

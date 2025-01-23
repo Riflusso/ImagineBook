@@ -1,24 +1,35 @@
 package io.github.jumperonjava.imaginebook;
 
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.texture.MissingSprite;
+import net.minecraft.client.texture.NativeImageBackedTexture;
 import net.minecraft.util.Identifier;
 
 public class Image {
-    private final String url;
-    private final Identifier left;
-    private final ImageSize right;
+    private final Identifier identifier;
+    private final ImageSize size;
 
-    public ImageSize getRight() {
-        return right;
+    public ImageSize getSize() {
+        return size;
     }
 
-    public Identifier getLeft() {
-        return left;
+    public Identifier getIdentifier() {
+        return identifier;
     }
 
-    public Image(Identifier left, ImageSize right, String url) {
-        this.left = left;
-        this.right = right;
-        this.url = url;
+    public Image(Identifier identifier, ImageSize size) {
+        this.identifier = identifier;
+        this.size = size;
+    }
+    public Image(Identifier identifier) {
+        this.identifier = identifier;
+        var texture = MinecraftClient.getInstance().getTextureManager().getOrDefault(identifier,MissingSprite.getMissingSpriteTexture());
+        if (texture instanceof NativeImageBackedTexture imageBackedTexture){
+            size = new ImageSize(imageBackedTexture.getImage().getWidth(), imageBackedTexture.getImage().getHeight());
+        }
+        else {
+            size = new ImageSize(64,64);
+        }
     }
     public static class ImageSize {
         private final int width;
@@ -28,8 +39,6 @@ public class Image {
             this.width = width;
             this.height = height;
         }
-
-
 
         private int min() {
             return Math.min(width, height);
