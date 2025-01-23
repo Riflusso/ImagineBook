@@ -71,7 +71,7 @@ public class ImageSerializer {
     }
 
     public static List<ImageData> parseSafeModeImages(String page) {
-        Pattern pattern = Pattern.compile("\\[.*?\\]");
+        Pattern pattern = Pattern.compile("\\[[^,]*?(,[+-]?\\d+(\\.\\d+)?){2,5}\\]");
 
         Matcher matcher = pattern.matcher(page);
 
@@ -88,14 +88,6 @@ public class ImageSerializer {
                         .replace("]", "")
                         .split("[,]")).toArray(String[]::new);
                 data.setUrl(elements[0]);
-
-
-                if(!str.contains(":") || !str.contains(","))
-                    continue;
-
-                if(!Imaginebook.resolverExists(data.getUrl().split(":",2)[0]))
-                    continue;
-
 
                 images.add(data);
                 var numbers = Arrays.stream(elements)

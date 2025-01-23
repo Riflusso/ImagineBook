@@ -19,7 +19,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.Rect2i;
 //? if >= 1.21.3
-import net.minecraft.component.type.WritableBookContentComponent;
+/*import net.minecraft.component.type.WritableBookContentComponent;*/
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
@@ -115,10 +115,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     //? if >= 1.21.3 {
-    void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
-    //?} else {
-    /*void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
-    *///?}
+    /*void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
+    *///?} else {
+    void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
+    //?}
         for (int i = 0; i < 250; i++) {
             display_pages.add(new ArrayList<>());
             //imaginebook_safe_pages.add(new ArrayList<>());
@@ -198,9 +198,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
     ImageData getCurrentPageImage(int id){
         if(id == -1)
             return null;
+        if(display_pages.get(currentPage).isEmpty())
+            return null;
         return display_pages.get(currentPage).get(id);
     }
-    //Get current page image by id
     void addCurrentPageImage(ImageData image) {
         setCurrentPageContent(getCurrentPageContent()+image.bookString());
         updateDisplayImages();
@@ -557,10 +558,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     @Override
     //? if < 1.20.4 {
-    /*public boolean mouseScrolled(double mouseX, double mouseY, double verticalAmount) {
-    *///?} else {
-    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-    //?}
+    public boolean mouseScrolled(double mouseX, double mouseY, double verticalAmount) {
+    //?} else {
+    /*public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+    *///?}
         if (!signing) {
             verticalAmount = Math.signum(verticalAmount);
             if (hasControlDown()) {
@@ -672,10 +673,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
             }
         }
         //? if < 1.20.4 {
-        /*return super.mouseScrolled(mouseX, mouseY, verticalAmount);
-        *///?} else {
-        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
-        //?}
+        return super.mouseScrolled(mouseX, mouseY, verticalAmount);
+        //?} else {
+        /*return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        *///?}
     }
 
     Text lengthLeft;
@@ -715,7 +716,6 @@ public abstract class NewBookEditScreenMixin extends Screen {
         if (signing) {
             return;
         }
-        Imaginebook.LOGGER.info(currentPage + " ");
         int bookX = this.width / 2 - 96;
         int bookY = 2;
 

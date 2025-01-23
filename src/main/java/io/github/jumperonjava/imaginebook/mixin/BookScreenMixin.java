@@ -55,15 +55,15 @@ public class BookScreenMixin extends Screen {
 
 
         //? if >= 1.21.1
-        var pages = contents.pages();
+        /*var pages = contents.pages();*/
 
         //? if >= 1.21.1 {
-        for (int i = 0; i < pages.size(); i++) {
+        /*for (int i = 0; i < pages.size(); i++) {
             var page = pages.get(i).getString();
-        //?} else {
-        /*for (int i = 0; i < contents.getPageCount(); i++) {
+        *///?} else {
+        for (int i = 0; i < contents.getPageCount(); i++) {
             var page = contents.getPage(i).getString();
-        *///?}
+        //?}
 
 
             if (page.length() == Imaginebook.LENGTH) {
@@ -90,8 +90,6 @@ public class BookScreenMixin extends Screen {
     void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         int bookX = this.width / 2 - 96;
         int bookY = 2;
-
-        Imaginebook.LOGGER.info("pageIndex: " + pageIndex);
 
         if(pageIndex==-1){
             return;
