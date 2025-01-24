@@ -32,7 +32,7 @@ public class AsyncImageDownloader {
     public List<URL> inProgressImages = Collections.synchronizedList(new LinkedList<>());
     public List<URL> inProgressRetryImages = Collections.synchronizedList(new LinkedList<>());
     public List<URL> unregisteredImages = Collections.synchronizedList(new LinkedList<>());
-    public List<URL> errorImages = Collections.synchronizedList( new LinkedList<>());
+    public List<URL> errorImages = Collections.synchronizedList(new LinkedList<>());
     public List<URL> overLimitImages = Collections.synchronizedList(new LinkedList<>());
 
     public AsyncImageDownloader() {
@@ -66,48 +66,41 @@ public class AsyncImageDownloader {
                 Imaginebook.LOGGER.error("Failed to create folder for file: " + urlFile);
                 continue;
             }
-            try {
-                try (InputStream urlIn = downloadUrl.openStream();
-                     OutputStream fileOut = Files.newOutputStream(urlFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
+            try (InputStream urlIn = downloadUrl.openStream();
+                 OutputStream fileOut = Files.newOutputStream(urlFile, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING)) {
 
-                    Imaginebook.createImagineBookFolder();
+                Imaginebook.createImagineBookFolder();
 
-                    byte[] buffer = new byte[8192];
-                    int bytesRead;
-                    long totalBytesRead = 0;
-                    long maxSize = 8 * 1024 * 1024;
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                long totalBytesRead = 0;
+                long maxSize = 8 * 1024 * 1024;
 
-                    var convertReader = new ByteArrayOutputStream();
+                var convertReader = new ByteArrayOutputStream();
 
-                    while ((bytesRead = urlIn.read(buffer)) != -1) {
-                        totalBytesRead += bytesRead;
-                        if (totalBytesRead > maxSize) {
-                            overLimitImages.add(downloadUrl);
-                            throw new InvalidFormatException("File size exceeds 1MB limit.");
-                        }
-                        convertReader.write(buffer, 0, bytesRead);
+                while ((bytesRead = urlIn.read(buffer)) != -1) {
+                    totalBytesRead += bytesRead;
+                    if (totalBytesRead > maxSize) {
+                        overLimitImages.add(downloadUrl);
+                        throw new InvalidFormatException("File size exceeds 1MB limit.");
                     }
-                    var convertWriter = new ByteArrayInputStream(convertReader.toByteArray());
-
-                    var converted = convertToPng(convertWriter);
-
-                    IOUtils.copy(converted, fileOut);
-
-                    unregisteredImages.add(downloadUrl);
-                } catch (Exception e) {
-                    errorImages.add(downloadUrl);
-                    e.printStackTrace();
-                    try {
-                        Files.deleteIfExists(urlFile);
-                    } catch (IOException deleteException) {
-                        Imaginebook.LOGGER.error("Failed to clean up incomplete file: " + urlFile);
-                        deleteException.printStackTrace();
-                    }
+                    convertReader.write(buffer, 0, bytesRead);
                 }
+                var convertWriter = new ByteArrayInputStream(convertReader.toByteArray());
+
+                var converted = convertToPng(convertWriter);
+
+                IOUtils.copy(converted, fileOut);
+
+                unregisteredImages.add(downloadUrl);
             } catch (Exception e) {
                 errorImages.add(downloadUrl);
-                Imaginebook.LOGGER.error("Uncaught exception while downloading: ", e);
-                e.printStackTrace();
+                try {
+                    Files.deleteIfExists(urlFile);
+                } catch (IOException deleteException) {
+                    Imaginebook.LOGGER.error("Failed to clean up incomplete file: " + urlFile);
+                    deleteException.printStackTrace();
+                }
             }
         }
     }
@@ -121,12 +114,16 @@ public class AsyncImageDownloader {
             return URL_INVALID_ERROR;
         }
 
-        if (downloadedImages.containsKey(url)){
+        if (downloadedImages.containsKey(url)) {
             return downloadedImages.get(url);
         }
 
         if (inProgressImages.contains(url)) {
             return DOWNLOADING_IMAGE;
+        }
+
+        if (inProgressRetryImages.contains(url)) {
+            return ERROR_IMAGE;
         }
 
         if (errorImages.contains(url)) {
@@ -137,6 +134,10 @@ public class AsyncImageDownloader {
 
         if (overLimitImages.contains(url)) {
             return SIZE_ERROR;
+        }
+
+        if (Files.exists(urlPath(url))) {
+            unregisteredImages.add(url);
         }
 
         if (unregisteredImages.contains(url)) {
@@ -156,7 +157,7 @@ public class AsyncImageDownloader {
 
         inProgressImages.add(url);
 
-        return DOWNLOADING_IMAGE;
+        return ERROR_IMAGE;
     }
 
     public static Image registerTexture(InputStream texture, Identifier identifier) {
