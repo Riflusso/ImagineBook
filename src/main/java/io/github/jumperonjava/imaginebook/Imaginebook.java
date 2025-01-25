@@ -1,5 +1,6 @@
 package io.github.jumperonjava.imaginebook;
 
+import io.github.jumperonjava.imaginebook.resolvers.AsyncImageDownloader;
 import io.github.jumperonjava.imaginebook.resolvers.Resolver;
 import io.github.jumperonjava.imaginebook.resolvers.TextureResolver;
 import io.github.jumperonjava.imaginebook.resolvers.UrlResolver;
@@ -13,7 +14,6 @@ import net.fabricmc.loader.api.FabricLoader;
 import net.neoforged.fml.loading.FMLPaths;
 *//*?}*/
 
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,6 +51,13 @@ public final class Imaginebook {
         return FabricLoader.getInstance().getGameDir().resolve("imaginebook");
         //?} elif neoforge {
         /*return FMLPaths.GAMEDIR.get().resolve("imaginebook");
+         *///?}
+    }
+    public static Path getConfigFile(){
+        //? if fabric {
+        return FabricLoader.getInstance().getConfigDir().resolve("imaginebook.json");
+        //?} elif neoforge {
+        /*return FMLPaths.CONFIGDIR.get().resolve("imaginebook.json");
          *///?}
     }
 

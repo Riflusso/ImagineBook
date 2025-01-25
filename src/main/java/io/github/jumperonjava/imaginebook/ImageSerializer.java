@@ -1,5 +1,7 @@
 package io.github.jumperonjava.imaginebook;
 
+import io.github.jumperonjava.imaginebook.image.ImageData;
+
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

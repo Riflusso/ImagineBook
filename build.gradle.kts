@@ -105,7 +105,7 @@ publishMods {
         "${mod.name} ${loader.replaceFirstChar { it.uppercase() }} ${property("mod.mc_title")}-${mod.version}"
     version = mod.version
     changelog = rootProject.file("CHANGELOG.md").readText()
-    type = ReleaseType.BETA
+    type = ReleaseType.STABLE
 
     modLoaders.add(loader)
 

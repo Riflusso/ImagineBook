@@ -1,7 +1,8 @@
-package io.github.jumperonjava.imaginebook;
+package io.github.jumperonjava.imaginebook.image;
 
 import com.mojang.blaze3d.systems.RenderSystem;
-import io.github.jumperonjava.imaginebook.util.VersionFunctions;
+import io.github.jumperonjava.imaginebook.resolvers.AsyncImageDownloader;
+import io.github.jumperonjava.imaginebook.Imaginebook;
 import net.minecraft.client.gui.DrawContext;
 import org.joml.Quaternionf;
 
@@ -74,23 +75,16 @@ public class ImageData {
         context.getMatrices().multiply(new Quaternionf().rotateZ((float) Math.toRadians(rotation)));
         context.getMatrices().translate(-w / 2, -h / 2, 0);
 
-        VersionFunctions.drawTexture(context, image.getIdentifier(),
-                0,
-                0,
-                (float) 0,
-                (float) 0,
-                (int) renderWidth(),
-                (int) renderHeight(),
-                (int) renderWidth(),
-                (int) renderHeight()
-        );
+        context.getMatrices().scale(widthFraction, heightFraction, 1);
+        image.render(context);
+
         context.getMatrices().pop();
         RenderSystem.disableBlend();
         RenderSystem.enableCull();
 
     }
 
-    public Image getImage() {
+    public BookDrawable getImage() {
         try{
             var split = this.getUrl().split(":",2);
             return Imaginebook.getResolver(split[0]).resolve(split[1]);

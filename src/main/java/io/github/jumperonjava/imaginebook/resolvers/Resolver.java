@@ -1,9 +1,7 @@
 package io.github.jumperonjava.imaginebook.resolvers;
 
-import io.github.jumperonjava.imaginebook.Image;
-
-import java.util.Arrays;
+import io.github.jumperonjava.imaginebook.image.BookDrawable;
 
 public interface Resolver {
-    Image resolve(String path);
+    BookDrawable resolve(String path);
 }

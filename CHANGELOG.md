@@ -1,0 +1,1 @@
+Fixed freezing when editing url by symbol

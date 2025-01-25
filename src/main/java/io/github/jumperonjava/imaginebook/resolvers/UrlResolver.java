@@ -1,7 +1,6 @@
 package io.github.jumperonjava.imaginebook.resolvers;
 
-import io.github.jumperonjava.imaginebook.AsyncImageDownloader;
-import io.github.jumperonjava.imaginebook.Image;
+import io.github.jumperonjava.imaginebook.image.BookDrawable;
 
 public class UrlResolver implements Resolver {
     public static AsyncImageDownloader DOWNLOADER = new AsyncImageDownloader();
@@ -15,7 +14,7 @@ public class UrlResolver implements Resolver {
     }
 
     @Override
-    public Image resolve(String path) {
+    public BookDrawable resolve(String path) {
         return DOWNLOADER.requestTexture(protocol+path);
     }
 }
