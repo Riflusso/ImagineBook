@@ -20,4 +20,17 @@ public final class PlatformEntrypoint {
         Imaginebook.init();
     }
 }
+*//*?} elif forge {*/
+/*import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.fml.loading.FMLLoader;
+
+@Mod(Imaginebook.MOD_ID)
+public final class PlatformEntrypoint {
+    public PlatformEntrypoint() {
+        if (!FMLLoader.getDist().isClient()) {
+            return;
+        }
+        Imaginebook.init();
+    }
+}
 *//*?}*/

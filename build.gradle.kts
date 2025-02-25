@@ -55,10 +55,8 @@ dependencies {
         "forge"("net.minecraftforge:forge:${minecraft}-${mod.dep("forge_loader")}")
         mappings("net.fabricmc:yarn:$minecraft+build.${mod.dep("yarn_build")}:v2")
 
-        "io.github.llamalad7:mixinextras-forge:${mod.dep("mixin_extras")}".let {
-            implementation(it)
-            include(it)
-        }
+        annotationProcessor("io.github.llamalad7:mixinextras-common:${mod.dep("mixin_extras")}")?.let { compileOnly(it) }
+        include("io.github.llamalad7:mixinextras-forge:${mod.dep("mixin_extras")}")?.let { implementation(it) }
     }
     if (loader == "neoforge") {
         "neoForge"("net.neoforged:neoforge:${mod.dep("neoforge_loader")}")

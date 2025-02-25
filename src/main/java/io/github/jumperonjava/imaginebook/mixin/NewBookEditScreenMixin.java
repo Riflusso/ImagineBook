@@ -47,11 +47,6 @@ import java.util.regex.Pattern;
 
 import static io.github.jumperonjava.imaginebook.image.ImageData.isMouseOverImage;
 
-/*? if fabric {*/
-/*?} elif neoforge {*/
-/*import net.neoforged.fml.ModList;
-*//*?}*/
-
 @Mixin(BookEditScreen.class)
 public abstract class NewBookEditScreenMixin extends Screen {
 
