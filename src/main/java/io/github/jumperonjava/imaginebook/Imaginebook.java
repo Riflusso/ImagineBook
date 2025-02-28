@@ -10,8 +10,9 @@ import io.github.jumperonjava.imaginebook.resolvers.UrlResolver;
 /*? if fabric {*/
 import net.fabricmc.loader.api.FabricLoader;
 /*?} elif neoforge {*/
-/*import net.neoforged.fml.ModList;
-import net.neoforged.fml.loading.FMLPaths;
+/*import net.neoforged.fml.loading.FMLPaths;
+*//*?} elif forge {*/
+/*import net.minecraftforge.fml.loading.FMLPaths;
 *//*?}*/
 
 import org.slf4j.Logger;
@@ -49,14 +50,14 @@ public final class Imaginebook {
     public static Path getCachePath(){
         //? if fabric {
         return FabricLoader.getInstance().getGameDir().resolve("imaginebook");
-        //?} elif neoforge {
+        //?} elif neoforge || forge {
         /*return FMLPaths.GAMEDIR.get().resolve("imaginebook");
          *///?}
     }
     public static Path getConfigFile(){
         //? if fabric {
         return FabricLoader.getInstance().getConfigDir().resolve("imaginebook.json");
-        //?} elif neoforge {
+        //?} elif neoforge || forge {
         /*return FMLPaths.CONFIGDIR.get().resolve("imaginebook.json");
          *///?}
     }

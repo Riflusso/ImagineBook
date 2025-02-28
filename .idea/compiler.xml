@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Gradle Imported" enabled="true">
+        <outputRelativeToContentRoot value="true" />
+        <option name="defaultObfuscationEnv" value="named:intermediary" />
+        <option name="inMapFileNamedIntermediary" value="$USER_HOME$/.gradle/caches/fabric-loom/1.20.1/net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2-forge-1.20.1-47.3.0/mappings-mixin-srg.tiny" />
+        <option name="outMapFileNamedIntermediary" value="$PROJECT_DIR$/versions/1.20.1-forge/build/loom-cache/mixin-map-net.fabricmc.yarn.1_20_1.1.20.1+build.10-v2-forge-1.20.1-47.3.0.main.tiny" />
+        <option name="outRefMapFile" value="$PROJECT_DIR$/versions/1.20.1-forge/build/classes/java/main/imaginebook-forge-1.20.1-forge-refmap.json" />
+        <option name="quiet" value="true" />
+        <processorPath useClasspath="false">
+          <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.llamalad7/mixinextras-common/0.4.1/a7f425cc49de7f10d008a9a676f5f023ebac13bb/mixinextras-common-0.4.1.jar" />
+        </processorPath>
+        <module name="ImagineBook.1.20.1-forge.main" />
+      </profile>
+    </annotationProcessing>
     <bytecodeTargetLevel target="17">
       <module name="CustomCursor.1.21.1" target="21" />
       <module name="CustomCursor.1.21.1-fabric" target="21" />
