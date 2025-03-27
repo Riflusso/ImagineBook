@@ -5,6 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
 import io.github.jumperonjava.imaginebook.*;
 import io.github.jumperonjava.imaginebook.image.ImageData;
+import io.github.jumperonjava.imaginebook.util.VersionFunctions;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.Drawable;
 import net.minecraft.client.gui.Element;
@@ -55,15 +56,15 @@ public class BookScreenMixin extends Screen {
 
 
         //? if >= 1.21.1
-        var pages = contents.pages();
+        /*var pages = contents.pages();*/
 
         //? if >= 1.21.1 {
-        for (int i = 0; i < pages.size(); i++) {
+        /*for (int i = 0; i < pages.size(); i++) {
             var page = pages.get(i).getString();
-        //?} else {
-        /*for (int i = 0; i < contents.getPageCount(); i++) {
+        *///?} else {
+        for (int i = 0; i < contents.getPageCount(); i++) {
             var page = contents.getPage(i).getString();
-        *///?}
+        //?}
 
 
             if (page.length() == Imaginebook.LENGTH) {
@@ -96,7 +97,7 @@ public class BookScreenMixin extends Screen {
         }
         var images = imaginebook_pages.get(pageIndex);
         if (images == null) return;
-        for (ImageData image : images.reversed()) {
+        for (ImageData image : VersionFunctions.reversed(images)) {
             RenderSystem.disableCull();
             RenderSystem.enableBlend();
             image.renderImage(context, bookX, bookY);

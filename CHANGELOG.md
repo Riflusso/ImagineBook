@@ -1,1 +1,1 @@
-Fixed freezing when editing url by symbol
+Fixed crash related to function not available on java 17
