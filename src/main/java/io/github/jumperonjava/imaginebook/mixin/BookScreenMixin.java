@@ -3,6 +3,8 @@ package io.github.jumperonjava.imaginebook.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
+//? if >= 1.21.5
+import com.mojang.blaze3d.opengl.GlStateManager;
 import io.github.jumperonjava.imaginebook.*;
 import io.github.jumperonjava.imaginebook.image.ImageData;
 import io.github.jumperonjava.imaginebook.util.VersionFunctions;
@@ -56,15 +58,15 @@ public class BookScreenMixin extends Screen {
 
 
         //? if >= 1.21.1
-        /*var pages = contents.pages();*/
+        var pages = contents.pages();
 
         //? if >= 1.21.1 {
-        /*for (int i = 0; i < pages.size(); i++) {
+        for (int i = 0; i < pages.size(); i++) {
             var page = pages.get(i).getString();
-        *///?} else {
-        for (int i = 0; i < contents.getPageCount(); i++) {
+        //?} else {
+        /*for (int i = 0; i < contents.getPageCount(); i++) {
             var page = contents.getPage(i).getString();
-        //?}
+        *///?}
 
 
             if (page.length() == Imaginebook.LENGTH) {
@@ -98,8 +100,8 @@ public class BookScreenMixin extends Screen {
         var images = imaginebook_pages.get(pageIndex);
         if (images == null) return;
         for (ImageData image : VersionFunctions.reversed(images)) {
-            RenderSystem.disableCull();
-            RenderSystem.enableBlend();
+            /*? if >=1.21.5 {*/ GlStateManager._disableCull(); /*?} else {*//*RenderSystem.disableCull();*//*?}*/
+            /*? if >=1.21.5 {*/ GlStateManager._enableBlend(); /*?} else {*//*RenderSystem.enableBlend();*//*?}*/
             image.renderImage(context, bookX, bookY);
         }
         previousPageButton.render(context, mouseX, mouseY, delta);

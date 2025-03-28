@@ -172,7 +172,7 @@ public class AsyncImageDownloader {
 
     public static BookDrawable registerTexture(InputStream texture, Identifier identifier) {
         NativeImage nativeImage = toNativeImage(texture);
-        var backedTestTexture = new NativeImageBackedTexture(nativeImage);
+        var backedTestTexture = new NativeImageBackedTexture(/*? if >=1.21.5 >>*/ identifier::toString, nativeImage);
         MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, backedTestTexture);
         return new Image(identifier, new Image.ImageSize(nativeImage.getWidth(), nativeImage.getHeight()));
     }

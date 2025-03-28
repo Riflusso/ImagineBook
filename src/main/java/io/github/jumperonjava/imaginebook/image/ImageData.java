@@ -1,6 +1,8 @@
 package io.github.jumperonjava.imaginebook.image;
 
 import com.mojang.blaze3d.systems.RenderSystem;
+//? if >= 1.21.5
+import com.mojang.blaze3d.opengl.GlStateManager;
 import io.github.jumperonjava.imaginebook.resolvers.AsyncImageDownloader;
 import io.github.jumperonjava.imaginebook.Imaginebook;
 import net.minecraft.client.gui.DrawContext;
@@ -79,8 +81,8 @@ public class ImageData {
         image.render(context);
 
         context.getMatrices().pop();
-        RenderSystem.disableBlend();
-        RenderSystem.enableCull();
+        /*? if >=1.21.5 {*/ GlStateManager._disableBlend(); /*?} else {*//*RenderSystem.disableBlend();*//*?}*/
+        /*? if >=1.21.5 {*/ GlStateManager._enableCull(); /*?} else {*//*RenderSystem.enableCull();*//*?}*/
 
     }
 

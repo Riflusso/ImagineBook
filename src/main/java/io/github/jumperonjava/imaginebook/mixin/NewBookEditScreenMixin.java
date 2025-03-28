@@ -3,6 +3,8 @@ package io.github.jumperonjava.imaginebook.mixin;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.mojang.blaze3d.systems.RenderSystem;
+//? if >= 1.21.5
+import com.mojang.blaze3d.opengl.GlStateManager;
 import io.github.jumperonjava.imaginebook.*;
 import io.github.jumperonjava.imaginebook.image.Image;
 import io.github.jumperonjava.imaginebook.image.ImageData;
@@ -21,7 +23,7 @@ import net.minecraft.client.sound.PositionedSoundInstance;
 import net.minecraft.client.util.SelectionManager;
 import net.minecraft.client.util.math.Rect2i;
 //? if >= 1.21.3
-/*import net.minecraft.component.type.WritableBookContentComponent;*/
+import net.minecraft.component.type.WritableBookContentComponent;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.sound.SoundEvents;
@@ -112,10 +114,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     @Inject(method = "<init>", at = @At("TAIL"))
     //? if >= 1.21.3 {
-    /*void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
-    *///?} else {
-    void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
-    //?}
+    void construct(PlayerEntity player, ItemStack stack, Hand hand, WritableBookContentComponent writableBookContent, CallbackInfo ci) {
+    //?} else {
+    /*void construct(PlayerEntity player, ItemStack itemStack, Hand hand, CallbackInfo ci) {
+    *///?}
         for (int i = 0; i < 250; i++) {
             display_pages.add(new ArrayList<>());
             //imaginebook_safe_pages.add(new ArrayList<>());
@@ -555,10 +557,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     @Override
     //? if < 1.20.4 {
-    public boolean mouseScrolled(double mouseX, double mouseY, double verticalAmount) {
-    //?} else {
-    /*public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
-    *///?}
+    /*public boolean mouseScrolled(double mouseX, double mouseY, double verticalAmount) {
+    *///?} else {
+    public boolean mouseScrolled(double mouseX, double mouseY, double horizontalAmount, double verticalAmount) {
+    //?}
         if (!signing) {
             verticalAmount = Math.signum(verticalAmount);
             if (hasControlDown()) {
@@ -670,10 +672,10 @@ public abstract class NewBookEditScreenMixin extends Screen {
             }
         }
         //? if < 1.20.4 {
-        return super.mouseScrolled(mouseX, mouseY, verticalAmount);
-        //?} else {
-        /*return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
-        *///?}
+        /*return super.mouseScrolled(mouseX, mouseY, verticalAmount);
+        *///?} else {
+        return super.mouseScrolled(mouseX, mouseY, horizontalAmount, verticalAmount);
+        //?}
     }
 
     Text lengthLeft;
@@ -719,8 +721,8 @@ public abstract class NewBookEditScreenMixin extends Screen {
         var combined = new ArrayList<ImageData>();
         combined.addAll(display_pages.get(currentPage));
         for (ImageData imageData : VersionFunctions.reversed(combined)) {
-            RenderSystem.disableCull();
-            RenderSystem.enableBlend();
+            /*? if >=1.21.5 {*/ GlStateManager._disableCull(); /*?} else {*//*RenderSystem.disableCull();*//*?}*/
+            /*? if >=1.21.5 {*/ GlStateManager._enableBlend(); /*?} else {*//*RenderSystem.enableBlend();*//*?}*/
 
             imageData.renderImage(context, bookX, bookY);
 
