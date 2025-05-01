@@ -22,8 +22,8 @@ stonecutter {
             for (version in versions) vers("$version-$loader", version)
         }
         
-        mc("fabric","1.20.1","1.20.4","1.21.1", "1.21.3", "1.21.4", )
-        mc("neoforge","1.21.1", "1.21.3", "1.21.4", )
+        mc("fabric","1.20.1","1.20.4","1.21.1", "1.21.3", "1.21.4", "1.21.5")
+        mc("neoforge","1.21.1", "1.21.3", "1.21.4", "1.21.5")
         mc("forge", "1.20.1", )
         
     }

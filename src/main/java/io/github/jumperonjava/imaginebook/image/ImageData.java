@@ -79,8 +79,6 @@ public class ImageData {
         image.render(context);
 
         context.getMatrices().pop();
-        RenderSystem.disableBlend();
-        RenderSystem.enableCull();
 
     }
 

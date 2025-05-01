@@ -719,11 +719,19 @@ public abstract class NewBookEditScreenMixin extends Screen {
         var combined = new ArrayList<ImageData>();
         combined.addAll(display_pages.get(currentPage));
         for (ImageData imageData : VersionFunctions.reversed(combined)) {
+            //? if < 1.21.5 {
             RenderSystem.disableCull();
             RenderSystem.enableBlend();
+            //?} else {
+            //?}
 
             imageData.renderImage(context, bookX, bookY);
 
+            //? if < 1.21.5 {
+            RenderSystem.disableBlend();
+            RenderSystem.enableCull();
+            //?} else {
+            //?}
         }
 
         var images = (display_pages.get(currentPage));
