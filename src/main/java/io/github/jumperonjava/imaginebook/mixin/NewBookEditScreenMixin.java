@@ -209,7 +209,18 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     @Override
     protected void switchFocus(GuiNavigationPath path) {
+        //forge eats ass and doesn't apply access widener
+        //? if forge {
+        /*try {
+            java.lang.reflect.Method method = this.getClass().getDeclaredMethod("blur");
+            method.setAccessible(true);
+            method.invoke(this);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        *///?} else {
         this.blur();
+        //?}
     }
 
     @Inject(method = "init", at = @At("HEAD"))
