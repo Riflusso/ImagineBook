@@ -5,7 +5,8 @@ import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-@Mixin(BookEditScreen.Line.class)
+//? if < 1.21.6 {
+/*@Mixin(BookEditScreen.Line.class)
 public interface LineAccessor {
     @Accessor("text")
     Text getText();
@@ -16,3 +17,7 @@ public interface LineAccessor {
     @Accessor("y")
     int getY();
 }
+*///?} else {
+@Mixin(BookEditScreen.class)
+public interface LineAccessor {}
+//?}
