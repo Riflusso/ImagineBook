@@ -43,6 +43,8 @@ import net.minecraft.component.type.WritableBookContentComponent;
 //? if >= 1.21.6 {
 import net.minecraft.client.gui.widget.EditBoxWidget;
 import net.minecraft.client.gui.screen.ingame.BookSigningScreen;
+import net.minecraft.text.OrderedText;
+import net.minecraft.text.StringVisitable;
 //?}
 
 import java.util.ArrayList;
@@ -68,6 +70,8 @@ public abstract class NewBookEditScreenMixin extends Screen {
     private PageTurnWidget nextPageButton;
     @Shadow
     private PageTurnWidget previousPageButton;
+    @Shadow
+    private Text pageIndicatorText;
 
     //? if >= 1.21.6 {
     @Shadow
@@ -83,8 +87,6 @@ public abstract class NewBookEditScreenMixin extends Screen {
     private ButtonWidget signButton;
     @Shadow
     private ButtonWidget doneButton;
-    @Shadow
-    private Text pageIndicatorText;
     @Shadow
     @Final
     private SelectionManager currentPageSelectionManager;
@@ -781,13 +783,13 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
         List.of(urlField, addButton, removeButton, widthButton, widthField, heightButton, heightField, xPosButton, xPosField, yPosButton, yPosField, nextPageButton, previousPageButton, /*? if <1.21.6 {*//*signButton, doneButton,*//*?}*/spinButton, spinField).forEach(e -> e.render(context, mouseX, mouseY, delta));
 
-        /*? if <1.21.6 {*/
-        /*int i = (this.width - 192) / 2;
+        int i = (this.width - 192) / 2;
         int j = 2;
         int n = this.textRenderer.getWidth(this.pageIndicatorText);
         context.drawText(this.textRenderer, this.pageIndicatorText, i - n + 192 - 44, 18, 0x3F000000, false);
 
-        for (var line : ((PageContentAccessor) this.getPageContent()).getLines()) {
+        /*? if <1.21.6 {*/
+        /*for (var line : ((PageContentAccessor) this.getPageContent()).getLines()) {
             context.drawText(this.textRenderer, ((LineAccessor) line).getText(), ((LineAccessor) line).getX(), ((LineAccessor) line).getY(), 0x3F000000, false);
         }
 
@@ -797,7 +799,23 @@ public abstract class NewBookEditScreenMixin extends Screen {
         if (((PageContentAccessor) this.getPageContent()).getLines().length > 14) {
             context.drawCenteredTextWithShadow(client.textRenderer, Text.translatable("imaginebook.error.too_much_lines"), width / 2, 222, VersionFunctions.ColorHelper.getArgb(255, 255, 100, 100));
         }
-        *//*?}*/
+        *///?} else {
+        int contentAreaX = (this.width - BookEditScreen.MAX_TEXT_WIDTH) / 2 - 4;
+        int contentAreaY = 32;
+
+        List<OrderedText> wrappedLines = this.textRenderer.wrapLines(StringVisitable.plain(getCurrentPageContent()), BookEditScreen.MAX_TEXT_WIDTH);
+
+        int currentLineY = contentAreaY;
+        int lineHeight = this.textRenderer.fontHeight;
+
+        for (OrderedText line : wrappedLines) {
+            int lineDrawY = currentLineY;
+
+            context.drawText(this.textRenderer, line, contentAreaX, lineDrawY, 0x3F000000, false);
+
+            currentLineY += lineHeight;
+        }
+        //?}
     }
 
 
