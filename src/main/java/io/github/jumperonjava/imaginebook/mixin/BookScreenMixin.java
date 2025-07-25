@@ -55,8 +55,6 @@ public class BookScreenMixin extends Screen {
 
 
     void parseImages(BookScreen.Contents contents) {
-
-
         //? if >= 1.21.1
         /*var pages = contents.pages();*/
 
@@ -72,8 +70,6 @@ public class BookScreenMixin extends Screen {
             if (page.length() == Imaginebook.LENGTH) {
                 var split = page.split("\n");
                 var last = split[split.length - 1];
-//            page = page.replace(last,"").trim();
-//            contents.pages().set(i,page);
                 try {
                     var asbytes = Base64.getDecoder().decode(last);
                     var definitions = ImageSerializer.deserializeImageMetadata(asbytes);

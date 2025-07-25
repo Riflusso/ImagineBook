@@ -40,7 +40,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -126,7 +125,6 @@ public abstract class NewBookEditScreenMixin extends Screen {
         //?}
         for (int i = 0; i < 250; i++) {
             display_pages.add(new ArrayList<>());
-            //imaginebook_safe_pages.add(new ArrayList<>());
         }
         updateDisplayImages();
     }
@@ -135,20 +133,6 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
         for (int i = 0; i < pages.size(); i++) {
             var page = pages.get(i);
-//            if (page.length() == Imaginebook.LENGTH) {
-//                var split = page.split("\n");
-//                var last = split[split.length - 1];
-//                page = page.replace(last, "").trim();
-//                pages.set(i, page);
-//                try {
-//                    var asbytes = Base64.getDecoder().decode(last);
-//                    var definitions = ImageSerializer.deserializeImageMetadata(asbytes);
-//                    display_pages.set(i, definitions);
-//                } catch (Exception e) {
-//                    this.error = Text.literal(e.getMessage() == null ? "Unknown error" : e.getMessage());
-//                    e.printStackTrace();
-//                }
-//            }
             display_pages.set(i, ImageSerializer.parseSafeModeImages(page));
         }
         currentEdited = Math.min(currentEdited, display_pages.get(currentPage).size() - 1);
@@ -414,18 +398,6 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     private void updateFields() {
         List<Integer> pageErrors = new ArrayList<>();
-//        for (int i = 0; i < pages.size(); i++) {
-//            var img_page = display_pages.get(i);
-//            if (img_page == null || img_page.size() == 0)
-//                continue;
-//
-//            var used = getEncoded(display_pages.get(i)).length();
-//            var left = 1000 - pages.get(i).length();
-//
-//            if (used > left) {
-//                pageErrors.add(i);
-//            }
-//        }
         if (pageErrors.size() > 0) {
             signing = false;
             Imaginebook.cancelledFinalize = true;
@@ -512,12 +484,6 @@ public abstract class NewBookEditScreenMixin extends Screen {
     public void mouseDragged(double mouseX, double mouseY, int button, double deltaX, double deltaY, CallbackInfoReturnable<Boolean> cir) {
         if (button != 0)
             return;
-//        for (var image : imaginebook_pages.get(currentPage)) {
-//            if (isMouseOver(image, mouseX, mouseY)) {
-//                draggedByMouse = image;
-//                break;
-//            }
-//        }
         if (draggedByMouse != -1) {
             bufferX += deltaX;
             bufferY += deltaY;
@@ -700,10 +666,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     @Inject(method = "render", at = @At("TAIL"))
     void render(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        //var left = 1000 - pages.get(currentPage).length() - getEncoded(display_pages.get(currentPage)).length();
-        //lengthLeft = Text.translatable("imaginebook.gui.used", left);
         currentPage = MathHelper.clamp(currentPage, -1, display_pages.size() - 1);
-
 
         doneButton.active = ((PageContentAccessor) this.getPageContent()).getLines().length <= 14;
         signButton.active = ((PageContentAccessor) this.getPageContent()).getLines().length <= 14;
@@ -799,20 +762,5 @@ public abstract class NewBookEditScreenMixin extends Screen {
             ci.cancel();
             return;
         }
-        for (int i = 0; i < pages.size(); i++) {
-//            var page = pages.get(i);
-//            var img_page = imaginebook_pages.get(i);
-//            if (img_page == null || img_page.size() == 0)
-//                continue;
-//
-//            var bytes = getEncoded(img_page);
-//            var data = "\n" + bytes;
-//            page = page + Strings.repeat("\n", Imaginebook.LENGTH - page.length() - data.length()) + data;
-//            pages.set(i, page);
-        }
-    }
-
-    private String getEncoded(List<ImageData> img_page) {
-        return Base64.getEncoder().encodeToString(ImageSerializer.serializeImageMetadata(img_page.stream().filter(s -> s.widthFraction != 0 && s.heightFraction != 0).toList()));
     }
 }
