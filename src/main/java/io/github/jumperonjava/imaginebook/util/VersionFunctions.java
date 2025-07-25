@@ -11,8 +11,8 @@ public class VersionFunctions {
     public static void drawTexture(DrawContext context, Identifier identifier, int x, int y, float u, float v, int width, int height, int textureWidth, int textureHeight) {
         //? if < 1.21.3 {
         context.drawTexture(identifier,x,y,u,v,width,height,textureWidth,textureHeight);
-        //?} else {
-        /*context.drawTexture(RenderLayer::getGuiTextured,identifier,x,y,u,v,width,height,textureWidth,textureHeight);
+         //?} else {
+        /*context.drawTexture(RenderLayer::getGuiTextured, identifier, x, y, u, v, width, height, textureWidth, textureHeight);
         *///?}
 
     }
@@ -20,7 +20,7 @@ public class VersionFunctions {
 
     //? if < 1.21.3 {
     public static ColorHelper.Argb ColorHelper = new ColorHelper.Argb();
-    //?} else {
+     //?} else {
     /*public static ColorHelper ColorHelper = new ColorHelper();
     *///?}
 
@@ -29,7 +29,7 @@ public class VersionFunctions {
     // this method reimplements that functionality
     public static <T> List<T> reversed(List<T> collection) {
         var reversedList = new LinkedList<T>();
-        collection.forEach((item) -> reversedList.add(0,item));
+        collection.forEach((item) -> reversedList.add(0, item));
         return new ArrayList<>(reversedList);
     }
 }

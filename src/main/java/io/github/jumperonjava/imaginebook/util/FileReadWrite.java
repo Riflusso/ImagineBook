@@ -9,6 +9,7 @@ public class FileReadWrite {
 
     /**
      * Writes text to file, throws runtime exception if something goes wrong
+     *
      * @param path
      * @param text
      */
@@ -21,18 +22,18 @@ public class FileReadWrite {
             throw new RuntimeException(e);
         }
     }
+
     /**
      * Tries to read file, creates empty file if it does not exist and returns empty string
+     *
      * @param file
      * @return
      */
     public static String read(Path file) {
-        try{
+        try {
             return new String(Files.readAllBytes(file));
-        }
-        catch(IOException e)
-        {
-            write(file,"");
+        } catch (IOException e) {
+            write(file, "");
             return read(file);
         }
     }

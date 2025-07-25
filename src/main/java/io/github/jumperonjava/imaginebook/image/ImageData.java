@@ -36,7 +36,7 @@ public class ImageData {
     }
 
     public ImageData() {
-                
+
     }
 
     public static boolean isMouseOverImage(ImageData imageData, double mouseX, double mouseY, int i) {
@@ -83,10 +83,10 @@ public class ImageData {
     }
 
     public BookDrawable getImage() {
-        try{
-            var split = this.getUrl().split(":",2);
+        try {
+            var split = this.getUrl().split(":", 2);
             return Imaginebook.getResolver(split[0]).resolve(split[1]);
-        }catch(Exception e){
+        } catch (Exception e) {
             return AsyncImageDownloader.ERROR_IMAGE;
         }
     }
@@ -110,6 +110,7 @@ public class ImageData {
     public float heightFraction() {
         return heightFraction;
     }
+
     public float renderWidth() {
         return widthFraction * (float) getImage().getSize().getWidth();
     }
@@ -167,6 +168,6 @@ public class ImageData {
     }
 
     public void setUrl(String url) {
-        this.url = url.replace(",","");
+        this.url = url.replace(",", "");
     }
 }
