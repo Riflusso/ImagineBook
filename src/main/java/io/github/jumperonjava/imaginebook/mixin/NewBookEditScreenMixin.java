@@ -29,6 +29,7 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.math.MathHelper;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -205,6 +206,7 @@ public abstract class NewBookEditScreenMixin extends Screen {
     }
 
     //current page get
+    @Nullable
     ImageData getCurrentPageImage(int id) {
         if (id == -1)
             return null;
@@ -311,7 +313,11 @@ public abstract class NewBookEditScreenMixin extends Screen {
         urlField = addDrawableChild(new TextFieldWidget(client.textRenderer, urlFieldX, urlFieldY, urlFieldWidth, elementHeight, Text.translatable("imaginebook.gui.urlhere")));
         urlField.setMaxLength(256);
         urlField.setChangedListener((url) -> {
-            if (url.equals(getCurrentEdited().getUrl())) return;
+            var getCurrentEdited = getCurrentEdited();
+            if(getCurrentEdited == null){
+                return;
+            }
+            if (url.equals(getCurrentEdited.getUrl())) return;
             if (url.length() > 255) {
                 urlField.setText(I18n.translate("imaginebook.error.too_long"));
                 return;

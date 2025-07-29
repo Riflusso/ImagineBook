@@ -26,6 +26,14 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.5-fabric/ImagineBook.1.21.5-fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.5-fabric/ImagineBook.1.21.5-fabric.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.5-neoforge/ImagineBook.1.21.5-neoforge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.5-neoforge/ImagineBook.1.21.5-neoforge.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.5-neoforge/ImagineBook.1.21.5-neoforge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.5-neoforge/ImagineBook.1.21.5-neoforge.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.6-fabric/ImagineBook.1.21.6-fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.6-fabric/ImagineBook.1.21.6-fabric.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.6-fabric/ImagineBook.1.21.6-fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.6-fabric/ImagineBook.1.21.6-fabric.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.6-neoforge/ImagineBook.1.21.6-neoforge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.6-neoforge/ImagineBook.1.21.6-neoforge.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.6-neoforge/ImagineBook.1.21.6-neoforge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.6-neoforge/ImagineBook.1.21.6-neoforge.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.7-fabric/ImagineBook.1.21.7-fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.7-fabric/ImagineBook.1.21.7-fabric.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.7-fabric/ImagineBook.1.21.7-fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.7-fabric/ImagineBook.1.21.7-fabric.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.7-neoforge/ImagineBook.1.21.7-neoforge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.7-neoforge/ImagineBook.1.21.7-neoforge.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.7-neoforge/ImagineBook.1.21.7-neoforge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.7-neoforge/ImagineBook.1.21.7-neoforge.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.8-fabric/ImagineBook.1.21.8-fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.8-fabric/ImagineBook.1.21.8-fabric.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.8-fabric/ImagineBook.1.21.8-fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.8-fabric/ImagineBook.1.21.8-fabric.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.8-neoforge/ImagineBook.1.21.8-neoforge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.8-neoforge/ImagineBook.1.21.8-neoforge.main.iml" />
@@ -49,6 +57,10 @@
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.4-fabric/io.github.jumperonjava.ImagineBook.1.21.4-fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.4-fabric/io.github.jumperonjava.ImagineBook.1.21.4-fabric.test.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.4-neoforge/io.github.jumperonjava.ImagineBook.1.21.4-neoforge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.4-neoforge/io.github.jumperonjava.ImagineBook.1.21.4-neoforge.main.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.4-neoforge/io.github.jumperonjava.ImagineBook.1.21.4-neoforge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.4-neoforge/io.github.jumperonjava.ImagineBook.1.21.4-neoforge.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.8-fabric/io.github.jumperonjava.ImagineBook.1.21.8-fabric.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.8-fabric/io.github.jumperonjava.ImagineBook.1.21.8-fabric.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.8-fabric/io.github.jumperonjava.ImagineBook.1.21.8-fabric.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.8-fabric/io.github.jumperonjava.ImagineBook.1.21.8-fabric.test.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.8-neoforge/io.github.jumperonjava.ImagineBook.1.21.8-neoforge.main.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.8-neoforge/io.github.jumperonjava.ImagineBook.1.21.8-neoforge.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/versions/1.21.8-neoforge/io.github.jumperonjava.ImagineBook.1.21.8-neoforge.test.iml" filepath="$PROJECT_DIR$/.idea/modules/versions/1.21.8-neoforge/io.github.jumperonjava.ImagineBook.1.21.8-neoforge.test.iml" />
     </modules>
   </component>
 </project>
