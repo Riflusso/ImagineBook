@@ -158,9 +158,13 @@ public abstract class NewBookEditScreenMixin extends Screen {
 
     private void setCurrentPageContent(String content) {
         pages.set(currentPage, content);
-        //? if >= 1.21.6 {
+        //? if >= 1.21.7 {
         this.editBox.setText(content, true);
-        //?} else {
+        //?} else if >= 1.21.6 {
+        /*this.editBox.setText(content);
+        *///?} else {
+
+
         /*this.dirty = true;
         var start = currentPageSelectionManager.getSelectionStart();
         var end = currentPageSelectionManager.getSelectionEnd();
