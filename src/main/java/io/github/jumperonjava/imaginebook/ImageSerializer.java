@@ -11,8 +11,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class ImageSerializer {
-
-
     public static byte[] serializeImageMetadata(List<ImageData> imagesDefinition) {
         var buf = ByteBuffer.allocate(1000);
         buf.putShort((short) (2 + 2 + 4 + 4 + 2)); //Format (size)
@@ -102,8 +100,8 @@ public class ImageSerializer {
                     data.y = Float.parseFloat(numbers[1]);
                 }
                 if (numbers.length == 3) {
-                    data.widthFraction = Float.parseFloat(numbers[2])/ 100;
-                    data.heightFraction = Float.parseFloat(numbers[2])/ 100;
+                    data.widthFraction = Float.parseFloat(numbers[2]) / 100;
+                    data.heightFraction = Float.parseFloat(numbers[2]) / 100;
                 }
                 if (numbers.length == 4) {
                     data.widthFraction = Float.parseFloat(numbers[2]) / 100;

@@ -4,9 +4,12 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "client": [
-    "NewBookEditScreenMixin",
     "BookScreenMixin",
-    "MinecraftClientMixin"
+    "MinecraftClientMixin",
+    "NewBookEditScreenMixin",
+    "accessor.LineAccessor",
+    "accessor.PageContentAccessor",
+    "accessor.ScreenAccessor"
   ],
   "mixins": [
   ],

@@ -120,7 +120,7 @@ public class AsyncImageDownloader {
             URI = new URL(URIStr).toURI();
         } catch (MalformedURLException e) {
             return URI_INVALID_ERROR;
-        } catch (URISyntaxException e){
+        } catch (URISyntaxException e) {
             return URI_INVALID_ERROR;
         }
 
@@ -173,10 +173,10 @@ public class AsyncImageDownloader {
     public static BookDrawable registerTexture(InputStream texture, Identifier identifier) {
         NativeImage nativeImage = toNativeImage(texture);
         //? if < 1.21.5 {
-        var backedTestTexture = new NativeImageBackedTexture(nativeImage);
-        //?} else {
-        /*var backedTestTexture = new NativeImageBackedTexture(identifier::toString,nativeImage);
-        *///?}
+        /*var backedTestTexture = new NativeImageBackedTexture(nativeImage);
+        *///?} else {
+        var backedTestTexture = new NativeImageBackedTexture(identifier::toString, nativeImage);
+        //?}
         MinecraftClient.getInstance().getTextureManager().registerTexture(identifier, backedTestTexture);
         return new Image(identifier, new Image.ImageSize(nativeImage.getWidth(), nativeImage.getHeight()));
     }

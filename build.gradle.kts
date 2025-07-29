@@ -70,7 +70,9 @@ dependencies {
 }
 
 loom {
-    accessWidenerPath = rootProject.file("src/main/resources/imaginebook.accesswidener")
+    if (stonecutter.eval(minecraft, "<=1.21.5")) {
+        accessWidenerPath = rootProject.file("src/main/resources/imaginebook.accesswidener")
+    }
 
     decompilers {
         get("vineflower").apply { // Adds names to lambdas - useful for mixins
